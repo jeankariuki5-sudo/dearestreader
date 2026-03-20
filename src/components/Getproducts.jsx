@@ -73,7 +73,7 @@ const Getproducts = () => {
                         <div className="card-body brown">
                             <h5 className="text-light bg-dark"> {product.product_name} </h5>
 
-                            <p className="text-dark"> {product.product_description.slice(0, 100)}... </p>
+                            <p className="text-dark"> {product.product_description.slice(0, 90)}... </p>
 
                             <h4 className="text-dark bg-light"> Kes.{product.product_cost} </h4>
 
