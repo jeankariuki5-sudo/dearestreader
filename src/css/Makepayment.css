@@ -1,0 +1,33 @@
+.green {
+    background-color: #a5dd9b;
+}
+
+.all {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: url('background2.png') no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+}
+
+.card {
+    border-radius: 10px;
+    text-align: center;
+    /* Add a smooth transition for the glow and transform */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    border: 1px solid #edf9eb;
+    /* Subtle border */
+}
+
+/* Define the glow effect on hover */
+.card:hover {
+    /* Slightly lift the card */
+    transform: translateY(-5px);
+    /* The glow effect: horizontal, vertical, blur, spread, color */
+    box-shadow: 100px 100px 2000px #edf9eb,
+        100px 100px 4000px #edf9eb;
+}
