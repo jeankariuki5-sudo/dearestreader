@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import '../css/Getproducts.css'
 import Loader from './Loader';
 
+
 const Getproducts = () => {
 
     // Initialize hooks to help you manage the state of your application
@@ -64,6 +65,9 @@ const Getproducts = () => {
 
             {products.map((product) => (
                 <div className="col-md-3 justify-content-center mb-3">
+
+
+
                     <div className="card shadow green">
                         <img
                             src={img_url + product.product_photo}
