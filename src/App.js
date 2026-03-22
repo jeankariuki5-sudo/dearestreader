@@ -8,7 +8,6 @@ import Addproducts from './components/Addproducts';
 import Getproducts from './components/Getproducts';
 import Makepayment from './components/Makepayment';
 import NotFound from './components/Notfound'
-import Footer from './components/Footer';
 
 
 
@@ -36,8 +35,6 @@ function App() {
           <Route path='/makepayment' element={<Makepayment />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
-
-        <Footer />
       </div>
     </Router>
   );

@@ -3,7 +3,12 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import '../css/Getproducts.css'
 import Loader from './Loader';
+import { Carousel } from 'react-bootstrap';
 
+import banner1 from '../banners/thestrikerbanner.png'
+import banner2 from '../banners/harrypotterbanner.png'
+import banner3 from '../banners/kingofgluttonybanner.png'
+import Footer from './Footer';
 
 const Getproducts = () => {
 
@@ -55,40 +60,87 @@ const Getproducts = () => {
     // console.log("The products fetched are:", products)
 
     return (
-        <div className='row all'>
-            <h1 className="text-light bg-success">Available Books</h1>
+        <div>
+            <Carousel className="mb-4"
+                prevIcon={<span className="p-3 bg-dark rounded-circle carousel-control-prev-icon" aria-hidden="true" />}
+                nextIcon={<span className="p-3 bg-dark rounded-circle carousel-control-next-icon" aria-hidden="true" />}
+                variant='dark'
+            >
+                <Carousel.Item>
+                    <img
+                        className="d-block w-100"
+                        src={banner1}
+                        alt="First slide"
+                        style={{ height: "500px", objectFit: "cover" }}
+                    />
+                    <Carousel.Caption className='text-dark'>
+                    </Carousel.Caption>
+                </Carousel.Item>
 
-            <center> {loading && <Loader />}</center>
-            <h4 className="text-danger">{error}</h4>
+                <Carousel.Item>
+                    <img
+                        className="d-block w-100"
+                        src={banner2}
+                        alt="Second slide"
+                        style={{ height: "500px", objectFit: "cover" }}
+                    />
+                    <Carousel.Caption className='text-dark'>
+                    </Carousel.Caption>
+                </Carousel.Item>
 
-            {/* map the products fetched from the API to the user interface */}
+                <Carousel.Item>
+                    <img
+                        className="d-block w-100"
+                        src={banner3}
+                        alt="Third slide"
+                        style={{ height: "500px", objectFit: "cover" }}
+                    />
+                    <Carousel.Caption className='text-dark'>
+                    </Carousel.Caption>
+                </Carousel.Item>
+            </Carousel>
 
-            {products.map((product) => (
-                <div className="col-md-3 justify-content-center mb-3">
 
 
 
-                    <div className="card shadow green">
-                        <img
-                            src={img_url + product.product_photo}
-                            alt="product name"
-                            className='product-img mt-3' />
+            <div className='row all'>
+                <h1 className="text-light bg-success">Available Books</h1>
 
-                        <div className="card-body brown">
-                            <h5 className="text-light bg-dark"> {product.product_name} </h5>
+                <center> {loading && <Loader />}</center>
+                <h4 className="text-danger">{error}</h4>
 
-                            <p className="text-dark"> {product.product_description.slice(0, 90)}... </p>
+                {/* map the products fetched from the API to the user interface */}
 
-                            <h4 className="text-dark bg-light"> Kes.{product.product_cost} </h4>
+                {products.map((product) => (
+                    <div className="col-md-3 justify-content-center mb-3">
 
-                            <button className="btn btn-outline-dark" onClick={() => navigate("/makepayment", { state: { product } })}>Purchase now</button>
+
+
+                        <div className="card shadow green">
+                            <img
+                                src={img_url + product.product_photo}
+                                alt="product name"
+                                className='product-img mt-3' />
+
+                            <div className="card-body brown">
+                                <h5 className="text-light bg-dark"> {product.product_name} </h5>
+
+                                <p className="text-dark"> {product.product_description.slice(0, 90)}... </p>
+
+                                <h4 className="text-dark bg-light"> Kes.{product.product_cost} </h4>
+
+                                <button className="btn btn-outline-dark" onClick={() => navigate("/makepayment", { state: { product } })}>Purchase now</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            ))
-            }
+                ))
+                }
 
-        </div >
+            </div >
+
+            <Footer />
+
+        </div>
     )
 }
 
