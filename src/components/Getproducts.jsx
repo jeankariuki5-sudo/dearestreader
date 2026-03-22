@@ -61,6 +61,13 @@ const Getproducts = () => {
 
     return (
         <div>
+
+            <h1 className="text-light bg-success">Available Books</h1>
+
+
+            <center> {loading && <Loader />}</center>
+            <h4 className="text-danger">{error}</h4>
+
             <Carousel className="mb-4"
                 prevIcon={<span className="p-3 bg-dark rounded-circle carousel-control-prev-icon" aria-hidden="true" />}
                 nextIcon={<span className="p-3 bg-dark rounded-circle carousel-control-next-icon" aria-hidden="true" />}
@@ -104,10 +111,6 @@ const Getproducts = () => {
 
 
             <div className='row all'>
-                <h1 className="text-light bg-success">Available Books</h1>
-
-                <center> {loading && <Loader />}</center>
-                <h4 className="text-danger">{error}</h4>
 
                 {/* map the products fetched from the API to the user interface */}
 

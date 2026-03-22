@@ -12,8 +12,8 @@ const Footer = () => {
                         <h2 className="footer-logo">Dearest Reader</h2>
                         <p>Your go-to place for amazing books and great reads.</p>
                         <h6>Contact us:</h6>
-                        <p>Phone: +254710535253</p>
-                        <p>Email: dearesstreader@gmail.com</p>
+                        <b>Phone: <i>+25410535253</i> </b> <br />
+                        <b>Email: <i>dearesstreader@gmail.com</i> </b>
                     </div>
 
                     {/* Links */}
