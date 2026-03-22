@@ -22,7 +22,7 @@ function App() {
         <nav className='bg-dark'>
 
           <Link to="/" className='btn btn-success btn-sm m-1'> Home</Link>
-          <Link to="/addproducts" className='btn btn-success btn-sm m-1' >Add Book</Link>
+          <Link to="/addbook" className='btn btn-success btn-sm m-1' >Add Book</Link>
           <Link to="/signin" className='btn btn-success btn-sm m-1' >Signin</Link>
           <Link to="/signup" className='btn btn-success btn-sm m-1' >Signup</Link>
         </nav>
