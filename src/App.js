@@ -8,6 +8,7 @@ import Addproducts from './components/Addproducts';
 import Getproducts from './components/Getproducts';
 import Makepayment from './components/Makepayment';
 import NotFound from './components/Notfound'
+import Footer from './components/Footer';
 
 
 
@@ -31,11 +32,12 @@ function App() {
           <Route path='/' element={<Getproducts />} />
           <Route path='/signin' element={<Signin />} />
           <Route path='/signup' element={<Signup />} />
-          <Route path='/addproducts' element={<Addproducts />} />
+          <Route path='/addbook' element={<Addproducts />} />
           <Route path='/makepayment' element={<Makepayment />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
 
+        <Footer />
       </div>
     </Router>
   );

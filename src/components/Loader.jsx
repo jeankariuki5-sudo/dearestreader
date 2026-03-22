@@ -4,13 +4,13 @@ import '../css/Loader.css'
 const Loader = () => {
     return (
         <div className='body'>
-            <div class="loader">
-                <div class="base"></div>
-                <div class="line"></div>
-                <div class="line"></div>
-                <div class="line"></div>
-                <div class="line"></div>
-                <div class="line"></div>
+            <div className="loader">
+                <div className="base"></div>
+                <div className="line"></div>
+                <div className="line"></div>
+                <div className="line"></div>
+                <div className="line"></div>
+                <div className="line"></div>
             </div>
 
         </div>
