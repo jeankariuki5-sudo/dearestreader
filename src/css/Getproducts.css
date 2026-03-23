@@ -3,6 +3,7 @@
 }
 
 .all {
+    font-family: 'Montserrat', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -30,4 +31,78 @@
     /* The glow effect: horizontal, vertical, blur, spread, color */
     box-shadow: 100px 100px 2000px #edf9eb,
         100px 100px 4000px #edf9eb;
+}
+
+.search-container {
+    position: relative;
+    width: 350px;
+    margin: 30px auto;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 25px;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+    border: 1px solid white;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(12px);
+    color: white;
+
+}
+
+.search-input:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 8px rgba(40, 167, 69, 0.3);
+}
+
+.search-dropdown {
+    position: absolute;
+    top: 50px;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.search-item {
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+}
+
+.search-item:hover {
+    background: #f5f5f5;
+}
+
+input::placeholder {
+    color: white;
+}
+
+.no-results {
+    padding: 12px;
+    color: gray;
+    text-align: center;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
+
+.all h1 {
+    font-family: 'Playfair Display', serif;
+}
+
+.card-body h5 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: #1a1a1a;
 }

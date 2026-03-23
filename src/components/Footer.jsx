@@ -13,7 +13,7 @@ const Footer = () => {
                         <p>Your go-to place for amazing books and great reads.</p>
                         <h6>Contact us:</h6>
                         <b>Phone: <i>+25410535253</i> </b> <br />
-                        <b>Email: <i>dearesstreader@gmail.com</i> </b>
+                        <b>Email: <i>dearestreader@gmail.com</i> </b>
                     </div>
 
                     {/* Links */}
@@ -22,8 +22,9 @@ const Footer = () => {
                         <ul>
                             <li><a href="/">Available Books</a></li>
                             <li><a href="/addbook">Add Book</a></li>
-                            <li><a href="/signin">Sign in</a></li>
-                            <li><a href="/signup">Sign up</a></li>
+                            <li><a href="/signin">Sign In</a></li>
+                            <li><a href="/signup">Sign Up</a></li>
+                            <li><a href="/aboutus">About Us</a></li>
                         </ul>
                     </div>
 

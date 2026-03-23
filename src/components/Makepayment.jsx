@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../css/Makepayment.css'
 import Loader from './Loader';
+import Footer from './Footer';
 
 
 const Makepayment = () => {
@@ -59,58 +60,62 @@ const Makepayment = () => {
 
 
     return (
-        <div className="all">
-            <div className='row justify-content-center'>
-                {/* <button className='btn btn-outline-primary'> Back to Product </button> */}
+        <div>
+            <div className="all">
+                <div className='row justify-content-center'>
+                    {/* <button className='btn btn-outline-primary'> Back to Product </button> */}
 
-                <h1 className="text-light bg-success">Make Payment - Lipa na M-Pesa</h1>
+                    <h1 className="text-light bg-success">Make Payment - Lipa na M-Pesa</h1>
 
-                <div className="col-md-1">
-                    <input type="button"
-                        className="btn btn-dark"
-                        value="<- Back"
-                        onClick={() => navigate("/")} />
-                </div>
-
-                <div className="col-md-6 card shadow p-4 green">
-
-
-
-                    <img src={img_url + product.product_photo} alt="Product name" className='product-img' />
-
-                    <div className="card-body ">
-                        <h2 className="text-light bg-dark"> {product.product_name} </h2>
-
-                        <p className="text-dark"> {product.product_description} </p>
-
-                        <h3 className="text-dark bg-light">Kes {product.product_cost} </h3> <br />
-
-                        <form onSubmit={handlesubmit}>
-
-                            {/* bind the loading hook */}
-                            <center> {loading && <Loader />}</center>
-
-                            <h3 className="text-success"> {success} </h3>
-                            <h4 className="text-danger"> {error} </h4>
-
-
-                            <input type="number"
-                                className='form-control'
-                                placeholder='Enter the Phone number 254XXXXXXX'
-                                required
-                                value={number}
-                                onChange={(e) => setNumber(e.target.value)} /> <br />
-
-                            {/* {number} */}
-
-                            <input type="submit"
-                                value="Make Payment"
-                                className='btn btn-success' />
-                        </form>
+                    <div className="col-md-1">
+                        <input type="button"
+                            className="btn btn-dark"
+                            value="<- Back"
+                            onClick={() => navigate("/")} />
                     </div>
+
+                    <div className="col-md-6 card shadow p-4 green">
+
+
+
+                        <img src={img_url + product.product_photo} alt="Product name" className='product-img' />
+
+                        <div className="card-body ">
+                            <h2 className="text-light bg-dark"> {product.product_name} </h2>
+
+                            <p className="text-dark"> {product.product_description} </p>
+
+                            <h3 className="text-dark bg-light">Kes {product.product_cost} </h3> <br />
+
+                            <form onSubmit={handlesubmit}>
+
+                                {/* bind the loading hook */}
+                                <center> {loading && <Loader />}</center>
+
+                                <h3 className="text-success"> {success} </h3>
+                                <h4 className="text-danger"> {error} </h4>
+
+
+                                <input type="number"
+                                    className='form-control'
+                                    placeholder='Enter the Phone number 254XXXXXXX'
+                                    required
+                                    value={number}
+                                    onChange={(e) => setNumber(e.target.value)} /> <br />
+
+                                {/* {number} */}
+
+                                <input type="submit"
+                                    value="Make Payment 💳"
+                                    className='btn btn-success' />
+                            </form>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
+            <Footer />
         </div>
     )
 }

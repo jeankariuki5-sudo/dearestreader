@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import '../css/Signin.css'
 import Loader from './Loader';
+import Footer from './Footer';
 
 const Signin = () => {
 
@@ -104,11 +105,14 @@ const Signin = () => {
                         value="Sign in"
                         className='btn btn-dark' />
                     <br /> <br />
-                    Don't have an account? <Link to={'/signup'}>Sign up</Link>
+                    <div className='switch'>
+                        Don't have an account? <Link to={'/signup'}>Sign up</Link>
+                    </div>
 
                 </form>
 
             </div>
+
         </div>
     )
 }

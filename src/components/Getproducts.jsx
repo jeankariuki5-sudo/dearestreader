@@ -8,7 +8,7 @@ import { Carousel } from 'react-bootstrap';
 import banner1 from '../banners/thestrikerbanner.png'
 import banner2 from '../banners/harrypotterbanner.png'
 import banner3 from '../banners/kingofgluttonybanner.png'
-import Footer from './Footer';
+import Footer from './Footer'
 
 const Getproducts = () => {
 
@@ -16,6 +16,10 @@ const Getproducts = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+
+    // search bar
+    const [search, setSearch] = useState("");
+    const [filteredProducts, setFilteredProducts] = useState([]);
 
     // Declare the navigate hook
     const navigate = useNavigate()
@@ -35,7 +39,8 @@ const Getproducts = () => {
             const response = await axios.get('https://jeankariuki.alwaysdata.net/api/get_product_details')
 
             // update the products hook with the response given by the API
-            setProducts(response.data)
+            setProducts(response.data);
+            setFilteredProducts(response.data);
 
             // set the loading hook back to default
             setLoading(false)
@@ -58,15 +63,22 @@ const Getproducts = () => {
     }, [])
 
     // console.log("The products fetched are:", products)
+    const handleSearch = (value) => {
+        setSearch(value);
+
+        if (value.length > 0) {
+            const filtered = products.filter(product =>
+                product.product_name.toLowerCase().includes(value.toLowerCase())
+            );
+            setFilteredProducts(filtered);
+        } else {
+            setFilteredProducts(products);
+        }
+    };
 
     return (
         <div>
 
-            <h1 className="text-light bg-success">Available Books</h1>
-
-
-            <center> {loading && <Loader />}</center>
-            <h4 className="text-danger">{error}</h4>
 
             <Carousel className="mb-4"
                 prevIcon={<span className="p-3 bg-dark rounded-circle carousel-control-prev-icon" aria-hidden="true" />}
@@ -107,14 +119,46 @@ const Getproducts = () => {
                 </Carousel.Item>
             </Carousel>
 
+            <div className="search-container">
+                <input
+                    type="text"
+                    placeholder="🔍 Search books..."
+                    value={search}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    className="search-input"
+                />
 
+                {search && (
+                    <ul className="search-dropdown">
+                        {filteredProducts.length > 0 ? (
+                            filteredProducts.map(product => (
+                                <li
+                                    key={product.product_id}
+                                    className="search-item"
+                                    onClick={() => setSearch(product.product_name)}
+                                >
+                                    📚 {product.product_name}
+                                </li>
+                            ))
+                        ) : (
+                            <li className="no-results">No results found</li>
+                        )}
+                    </ul>
+                )}
+            </div>
 
 
             <div className='row all'>
 
+
+                <h1 className="text-light bg-success">Available Books</h1>
+
+                <center> {loading && <Loader />}</center>
+                <h4 className="text-danger">{error}</h4>
+
                 {/* map the products fetched from the API to the user interface */}
 
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                     <div className="col-md-3 justify-content-center mb-3">
 
 
@@ -126,7 +170,7 @@ const Getproducts = () => {
                                 className='product-img mt-3' />
 
                             <div className="card-body brown">
-                                <h5 className="text-light bg-dark"> {product.product_name} </h5>
+                                <h5 className="text-light bg-dark"> {product.product_name.slice(0, 23)}... </h5>
 
                                 <p className="text-dark"> {product.product_description.slice(0, 90)}... </p>
 
