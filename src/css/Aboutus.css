@@ -1,5 +1,8 @@
-.green {
-    background-color: #a5dd9b;
+.brown {
+    /* A more parchment-like gradient */
+    background: linear-gradient(to bottom right, #ccae82, #b89a6d);
+    color: #2c1e11;
+    /* Darker brown text for readability on vintage background */
 }
 
 .all {
@@ -11,23 +14,52 @@
     background-attachment: fixed;
     background-size: cover;
     background-position: center;
+    padding: 40px 0;
+    /* Extra space for the rough edges */
 }
 
+/* Base Card styles */
 .card {
-    border-radius: 10px;
+    border-radius: 2px;
+    /* Vintage paper usually isn't perfectly rounded */
     text-align: center;
-    /* Add a smooth transition for the glow and transform */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease;
     cursor: pointer;
-    border: 1px solid #edf9eb;
-    /* Subtle border */
+    border: none;
+    /* Let the filter handle the "edge" */
 }
 
-/* Define the glow effect on hover */
+/* The Rough Edge Magic */
+.vintage-card {
+    filter: url(#rough-paper);
+    /* Links to the SVG ID in the JSX */
+    box-shadow: 2px 3px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+}
+
+/* Optional: Add a subtle paper texture overlay */
+.vintage-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.1;
+    pointer-events: none;
+    background-image: url("https://www.transparenttextures.com/patterns/p6-mini.png");
+}
+
+.vintage-title {
+    padding: 10px 40px;
+    border-radius: 5px;
+    filter: url(#rough-paper);
+    /* Makes the title header look rough too! */
+    margin-bottom: 2rem;
+}
+
+/* Simplified Hover for Vintage feel */
 .card:hover {
-    /* Slightly lift the card */
-    transform: translateY(-5px);
-    /* The glow effect: horizontal, vertical, blur, spread, color */
-    box-shadow: 100px 100px 2000px #edf9eb,
-        100px 100px 4000px #edf9eb;
+    transform: translateY(-5px) rotate(-0.5deg);
+    /* Slight tilt like a loose paper */
 }
