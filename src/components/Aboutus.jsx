@@ -18,7 +18,7 @@ const Aboutus = () => {
                     <h1 className="text-light bg-success vintage-title">ABOUT US</h1>
 
                     {/* Added 'vintage-card' class here */}
-                    <div className="col-md-8 card shadow p-4 brown text-start vintage-card">
+                    <div className="col-md-8 card shadow p-4 brown text-start text-light vintage-card">
                         <h2 className='text-center'>About Dearest Reader</h2>
                         <h5>To our fellow traveler,</h5>
 

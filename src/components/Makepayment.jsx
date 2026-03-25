@@ -83,7 +83,7 @@ const Makepayment = () => {
                         <div className="card-body ">
                             <h2 className="text-light bg-dark"> {product.product_name} </h2>
 
-                            <p className="text-dark"> {product.product_description} </p>
+                            <p className="text-light"> {product.product_description} </p>
 
                             <h3 className="text-dark bg-light">Kes {product.product_cost} </h3> <br />
 

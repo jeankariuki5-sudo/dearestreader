@@ -187,11 +187,11 @@ const Getproducts = () => {
                             <div className="card-body green">
                                 <h5 className="text-light bg-dark"> {product.product_name.slice(0, 23)}... </h5>
 
-                                <p className="text-dark"> {product.product_description.slice(0, 90)}... </p>
+                                <p className="text-light"> {product.product_description.slice(0, 90)}... </p>
 
                                 <h4 className="text-dark bg-light"> Kes.{product.product_cost} </h4>
 
-                                <button className="btn btn-outline-dark" onClick={() => navigate("/makepayment", { state: { product } })}>Purchase now</button>
+                                <button className="btn btn-outline-light" onClick={() => navigate("/makepayment", { state: { product } })}>Purchase now</button>
                             </div>
                         </div>
                     </div>

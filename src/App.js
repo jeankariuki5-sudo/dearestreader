@@ -11,6 +11,7 @@ import NotFound from './components/Notfound'
 import weblogo from './weblogo.png'
 import Aboutus from './components/Aboutus';
 import BookHeader from './components/BookHeader';
+import CorrespondenceDesk from './components/CorrespondenceDesk';
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
             <Link to="/" className='nav-link text-white-50 mx-3 hover-link'>Home</Link>
             <Link to="/aboutus" className='nav-link text-white-50 mx-3 hover-link'>About Us</Link>
             <Link to="/addbook" className='nav-link text-white-50 mx-3 hover-link'>Add Book</Link>
+            <Link to="/writetous" className='nav-link text-white-50 mx-3 hover-link'>Write To Us</Link>
 
             {/* Action Buttons: Keep these slightly distinct but minimal */}
             <Link to="/signin" className='btn btn-outline-light btn-sm ms-3 px-3 rounded-pill'>Signin</Link>
@@ -48,6 +50,7 @@ function App() {
           <Route path='/addbook' element={<Addproducts />} />
           <Route path='/makepayment' element={<Makepayment />} />
           <Route path='/aboutus' element={<Aboutus />} />
+          <Route path='/writetous' element={<CorrespondenceDesk />} />
           <Route path='*' element={<NotFound />} />
         </Routes>
       </div>

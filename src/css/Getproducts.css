@@ -1,5 +1,5 @@
 .green {
-    background-color: #a5dd9b;
+    background-color: rgba(27, 42, 34, 0.85);
 }
 
 .all {
@@ -14,23 +14,23 @@
     background-position: center;
 }
 
+/* Card */
 .card {
     border-radius: 10px;
     text-align: center;
-    /* Add a smooth transition for the glow and transform */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
-    border: 1px solid #edf9eb;
-    /* Subtle border */
+    border: 1px solid #2e4438;
+    background: rgba(27, 42, 34, 0.85); /* dark green glass */
+    backdrop-filter: blur(8px);
 }
 
-/* Define the glow effect on hover */
+/* Glow effect */
 .card:hover {
-    /* Slightly lift the card */
-    transform: translateY(-5px);
-    /* The glow effect: horizontal, vertical, blur, spread, color */
-    box-shadow: 100px 100px 2000px #edf9eb,
-        100px 100px 4000px #edf9eb;
+    transform: translateY(-6px);
+    box-shadow:
+        0 10px 40px rgba(143, 191, 159, 0.25),
+        0 0 80px rgba(143, 191, 159, 0.15);
 }
 
 /* Wrapper */
@@ -41,21 +41,23 @@
     position: relative;
 }
 
-/* Main search bar */
+/* Search bar */
 .search-box {
     display: flex;
     align-items: center;
-    background: rgba(30, 30, 30, 0.9);
+    background: rgba(20, 35, 28, 0.95);
     border-radius: 12px;
     padding: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    border: 1px solid #2e4438;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
 
 /* Icon */
 .search-icon {
-    color: #aaa;
+    color: #6b8f7a;
     margin: 0 10px;
     font-size: 18px;
+    transition: 0.2s ease;
 }
 
 /* Input */
@@ -64,44 +66,52 @@
     background: transparent;
     border: none;
     outline: none;
-    color: white;
+    color: #ecfdf5;
     font-size: 16px;
+}
+
+/* Placeholder */
+input::placeholder {
+    color: #6b8f7a;
 }
 
 /* Search button */
 .search-btn {
-    background: #a5dd9b;
+    background: #2f6f4f;
     border: none;
     padding: 8px 16px;
     border-radius: 8px;
     margin-right: 5px;
     font-weight: 500;
+    color: #ecfdf5;
     cursor: pointer;
+    transition: 0.3s ease;
 }
 
 .search-btn:hover {
-    background: #a5dd9b;
+    background: #3f8a63;
 }
 
 /* Clear button */
 .clear-btn {
-    background: #333;
-    border: none;
+    background: #1b2a22;
+    border: 1px solid #2e4438;
     padding: 8px 16px;
     border-radius: 8px;
-    color: white;
+    color: #cfe7d9;
     cursor: pointer;
+    transition: 0.3s ease;
 }
 
 .clear-btn:hover {
-    background: #444;
+    background: #243a30;
 }
 
 /* Dropdown */
 .search-dropdown {
     position: absolute;
     width: 100%;
-    background: #1e1e1e;
+    background: #1b2a22;
     border-radius: 10px;
     margin-top: 5px;
     list-style: none;
@@ -109,63 +119,65 @@
     max-height: 200px;
     overflow-y: auto;
     z-index: 10;
+    border: 1px solid #2e4438;
 }
 
 /* Items */
 .search-item {
     padding: 10px;
     cursor: pointer;
-    color: white;
+    color: #ecfdf5;
+    display: flex;
+    align-items: center;
 }
 
+/* Hover item */
 .search-item:hover {
-    background: #a5dd9b;
-    color: #1a1a1a;
+    background: #2f6f4f;
+    color: #ecfdf5;
+}
+
+/* Book icon */
+.book-icon {
+    margin-right: 8px;
+    color: #8fbf9f;
+    font-size: 16px;
+    opacity: 0.9;
+    transition: 0.2s ease;
 }
 
 .search-item:hover .book-icon {
-    color: #1a1a1a;
-}
-/* No results */
-.no-results {
-    padding: 10px;
-    color: #aaa;
-}
-input::placeholder {
-    color: white;
+    color: #ecfdf5;
 }
 
+/* No results */
 .no-results {
     padding: 12px;
-    color: gray;
+    color: #6b8f7a;
     text-align: center;
 }
 
+/* Typography */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
 
 .all h1 {
     font-family: 'Playfair Display', serif;
+    color: #8fbf9f;
 }
 
 .card-body h5 {
     font-family: 'Playfair Display', serif;
     font-size: 1.2rem;
-    color: #1a1a1a;
+    color: #ecfdf5;
+}
+
+/* Focus effect */
+.search-box:focus-within {
+    border-color: #8fbf9f;
+    box-shadow: 0 0 10px rgba(143, 191, 159, 0.3);
 }
 
 .search-box:focus-within .search-icon {
-    color: #a5dd9b;
+    color: #8fbf9f;
     transform: scale(1.1);
-    transition: 0.2s ease;
 }
-
-.book-icon {
-    margin-right: 8px;
-    color: #a5dd9b; 
-    font-size: 16px;
-    opacity: 0.9;
-}
-
-
-
-
