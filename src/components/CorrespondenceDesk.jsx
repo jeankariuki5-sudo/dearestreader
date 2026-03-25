@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import '../css/CorrespondenceDesk.css';
+import Footer from './Footer';
 
 const CorrespondenceDesk = () => {
   const [isSent, setIsSent] = useState(false);
@@ -10,9 +11,10 @@ const CorrespondenceDesk = () => {
   };
 
   return (
-    <div className="page">
+    <div>
+      <div className="page">
       
-      {/* Header */}
+      
       <header className="header">
         <h1 className="title">The Writing Bureau</h1>
         <p className="subtitle">
@@ -26,20 +28,22 @@ const CorrespondenceDesk = () => {
         <Success onReset={() => setIsSent(false)} />
       )}
     </div>
+    <Footer />
+    </div>
   );
 };
 
-/* ================= FORM ================= */
+
 const Form = ({ onSend }) => {
   return (
     <form onSubmit={onSend} className="form">
 
-      {/* Paper texture */}
+      
       <div className="texture"></div>
 
       <div className="form-content">
 
-        {/* Inputs */}
+      
         <div className="grid">
           <InputField 
             label="Your Name" 
@@ -53,7 +57,7 @@ const Form = ({ onSend }) => {
           />
         </div>
 
-        {/* Message */}
+        
         <div className="message-group">
           <label className="label center">Your Message</label>
           <textarea
@@ -64,7 +68,7 @@ const Form = ({ onSend }) => {
           ></textarea>
         </div>
 
-        {/* Button */}
+        
         <div className="button-wrapper">
           <button type="submit" className="seal-button">
             <span className="button-text">Seal & Send</span>
@@ -77,7 +81,7 @@ const Form = ({ onSend }) => {
   );
 };
 
-/* ================= INPUT ================= */
+
 const InputField = ({ label, type, placeholder }) => {
   return (
     <div className="input-group">
@@ -92,7 +96,7 @@ const InputField = ({ label, type, placeholder }) => {
   );
 };
 
-/* ================= SUCCESS ================= */
+
 const Success = ({ onReset }) => {
   return (
     <div className="success">
@@ -108,6 +112,7 @@ const Success = ({ onReset }) => {
         Write another note
       </button>
     </div>
+  
   );
 };
 
