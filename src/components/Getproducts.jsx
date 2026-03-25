@@ -126,7 +126,7 @@ const Getproducts = () => {
 
                     <input
                         type="text"
-                        placeholder="Search Cakes..."
+                        placeholder="Search books..."
                         value={search}
                         onChange={(e) => handleSearch(e.target.value)}
                         className="search-input"
