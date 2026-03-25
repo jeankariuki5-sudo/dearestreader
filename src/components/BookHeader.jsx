@@ -50,11 +50,11 @@ const Subtitle = styled.span`
   opacity: 0.8;
 `;
 
-// 3. The Main Component
+
 const BookHeader = () => {
     return (
         <>
-            {/* Google Fonts Import (Can also be put in your index.html) */}
+            
             <style>
                 @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
             </style>

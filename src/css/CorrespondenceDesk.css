@@ -1,14 +1,13 @@
-/* Page */
 .page {
   min-height: 100vh;
-  background-color: #0f1a14; /* deep green background */
+  background-color: #0f1a14; 
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 80px 16px;
 }
 
-/* Header */
+
 .header {
   text-align: center;
   margin-bottom: 48px;
@@ -16,7 +15,7 @@
 
 .title {
   font-family: serif;
-  color: #8fbf9f; /* soft sage green */
+  color: #8fbf9f; 
   font-size: 2.5rem;
   font-style: italic;
   margin-bottom: 8px;
@@ -28,18 +27,18 @@
   opacity: 0.7;
 }
 
-/* Form */
+
 .form {
   position: relative;
   max-width: 700px;
   width: 100%;
-  background: #1b2a22; /* dark green card */
+  background: #1b2a22; 
   padding: 40px;
   border: 1px solid #2e4438;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
 }
 
-/* Texture overlay */
+
 .texture {
   position: absolute;
   top: 0;
@@ -51,7 +50,7 @@
   pointer-events: none;
 }
 
-/* Content */
+
 .form-content {
   position: relative;
   z-index: 1;
@@ -60,7 +59,7 @@
   gap: 32px;
 }
 
-/* Grid */
+
 .grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -73,7 +72,7 @@
   }
 }
 
-/* Input */
+
 .input-group {
   display: flex;
   flex-direction: column;
@@ -96,7 +95,7 @@
 .input {
   background: transparent;
   border: none;
-  color: #ecfdf5; /* light mint text */
+  color: #ecfdf5; 
   padding: 8px 0;
   outline: none;
 }
@@ -105,7 +104,6 @@
   color: #6b8f7a;
 }
 
-/* Textarea */
 .message-group {
   display: flex;
   flex-direction: column;
@@ -136,7 +134,7 @@
 .seal-button {
   position: relative;
   padding: 16px 48px;
-  background: #2f6f4f; /* main green */
+  background: #2f6f4f; 
   color: #ecfdf5;
   font-family: serif;
   text-transform: uppercase;
@@ -147,7 +145,7 @@
 }
 
 .seal-button:hover {
-  background: #3f8a63; /* lighter green hover */
+  background: #3f8a63; 
 }
 
 .seal-border {
@@ -166,7 +164,7 @@
   opacity: 1;
 }
 
-/* Success */
+
 .success {
   text-align: center;
 }
