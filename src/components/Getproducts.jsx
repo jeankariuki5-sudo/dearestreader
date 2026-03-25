@@ -9,6 +9,7 @@ import banner1 from '../banners/thestrikerbanner.png'
 import banner2 from '../banners/harrypotterbanner.png'
 import banner3 from '../banners/kingofgluttonybanner.png'
 import Footer from './Footer'
+import { FiBook, FiSearch } from 'react-icons/fi';
 
 const Getproducts = () => {
 
@@ -119,14 +120,29 @@ const Getproducts = () => {
                 </Carousel.Item>
             </Carousel>
 
-            <div className="search-container">
-                <input
-                    type="text"
-                    placeholder="🔍 Search books..."
-                    value={search}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    className="search-input"
-                />
+            <div className="search-wrapper">
+                <div className="search-box">
+                    <FiSearch className='search-icon'/>
+
+                    <input
+                        type="text"
+                        placeholder="Search Cakes..."
+                        value={search}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        className="search-input"
+                    />
+
+                    <button className="search-btn">Search</button>
+                    <button
+                        className="clear-btn"
+                        onClick={() => {
+                            setSearch("");
+                            setFilteredProducts(products);
+                        }}
+                    >
+                        Clear
+                    </button>
+                </div>
 
                 {search && (
                     <ul className="search-dropdown">
@@ -137,7 +153,7 @@ const Getproducts = () => {
                                     className="search-item"
                                     onClick={() => setSearch(product.product_name)}
                                 >
-                                    📚 {product.product_name}
+                                    <FiBook className='book-icon' /> {product.product_name}
                                 </li>
                             ))
                         ) : (
@@ -146,7 +162,6 @@ const Getproducts = () => {
                     </ul>
                 )}
             </div>
-
 
             <div className='row all'>
 
