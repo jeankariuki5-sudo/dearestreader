@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import '../css/Signin.css'
 import Loader from './Loader';
-import Footer from './Footer';
+
 
 const Signin = () => {
 
