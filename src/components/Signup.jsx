@@ -4,57 +4,56 @@ import { Link } from 'react-router-dom'
 import Loader from './Loader';
 
 const Signup = () => {
-    // initialize hooks
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState(""); // FIX #7: Password confirmation
     const [phone, setPhone] = useState("");
 
-
-    // define the 3 states an application will move to
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState("")
     const [error, setError] = useState("")
 
-    // below is a function that will handle the submit action
     const handleSubmit = async (e) => {
-        // below we prevent our sight from realoading
         e.preventDefault()
 
-        // update our loading hook with a message thet will be displayed to the users who are trying to register
+        // FIX #7: Validate passwords match before submitting
+        if (password !== confirmPassword) {
+            setError("Passwords do not match. Please try again.");
+            return;
+        }
+
+        // FIX #6: Basic phone format validation
+        if (!/^(07|01|2547|2541)\d{8,}$/.test(phone.replace(/\s/g, ""))) {
+            setError("Please enter a valid Kenyan phone number.");
+            return;
+        }
+
         setLoading(true)
+        setError("")
 
         try {
-            // create a form data object that will enable you to capture the form details entered on the form
             const formdata = new FormData();
-
-            // insert form details(username, email, password, phone) in terms of key-value pairs
             formdata.append("username", username);
             formdata.append("email", email);
             formdata.append("password", password);
             formdata.append("phone", phone);
 
-            // by use of axios we can access the method POST
             const response = await axios.post('https://jeankariuki.alwaysdata.net/api/signup', formdata)
 
-            // set back the loading hook to default
             setLoading(false);
+            setSuccess(response.data.message)
 
-            // just incase everything goes on well update the success hook with a message
-            setSuccess(response.data.success)
-
-            // clear your hooks 
             setUsername("")
             setEmail("")
             setPassword("")
+            setConfirmPassword("")
             setPhone("")
         }
         catch (error) {
-            // set the loading hook back to default
             setLoading(false);
-
-            // update the error hook with the message given back from the response
-            setError(error.message)
+            // FIX #8: Show a user-friendly error, not raw Axios internals
+            setError("Registration failed. Please check your details and try again.")
         }
     }
 
@@ -75,7 +74,6 @@ const Signup = () => {
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required /> <br />
-                        {/* {username} */}
                     </div>
 
                     <div className="input-box">
@@ -84,7 +82,6 @@ const Signup = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required /> <br />
-                        {/* {email} */}
                     </div>
 
                     <div className="input-box">
@@ -93,7 +90,15 @@ const Signup = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required /> <br />
-                        {/* {password} */}
+                    </div>
+
+                    {/* FIX #7: Confirm password field */}
+                    <div className="input-box">
+                        <input type="password"
+                            placeholder='Confirm your password'
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required /> <br />
                     </div>
 
                     <div className="input-box">
@@ -102,15 +107,14 @@ const Signup = () => {
                             value={phone}
                             onChange={(e) => setPhone(e.target.value)}
                             required /> <br />
-                        {/* {phone} */}
                     </div>
 
-                    <input type="submit" value="Signup" className='btn' />
+                    {/* FIX #5: Disable submit while loading */}
+                    <input type="submit" value={loading ? "Signing up..." : "Signup"} className='btn' disabled={loading} />
                     <br /> <br />
 
                     <div className='switch'>
                         Already have an account? <Link to={'/signin'}>Sign in</Link>
-
                     </div>
                 </form>
             </div>

@@ -43,14 +43,11 @@ const Signin = () => {
 
             // Check whether the user exists as part of your response from the API
             if (response.data.user) {
-                // If user is there, definitely the details entered during signin are correct
-                // setSuccess("Login Successful")
-                // Store user details in local storag
-
-
-                localStorage.setItem("user", JSON.stringify(response.data.user))
-
-                // if it is successfull let a person get redirected to the main page
+                localStorage.setItem("user", JSON.stringify(response.data.user));
+                // Store JWT token for protected API calls
+                if (response.data.token) {
+                    localStorage.setItem("token", response.data.token);
+                }
                 navigate("/");
             }
             else {
@@ -63,7 +60,7 @@ const Signin = () => {
             setLoading(false)
 
             // Update the error hook with message
-            setError("Oops Something went wrong. Try again...")
+            setError("Something went wrong. Please check your connection and try again.")
         }
     }
 
@@ -101,9 +98,11 @@ const Signin = () => {
                     </div>
 
 
+                    {/* FIX #5: Disable submit while loading to prevent double-submission */}
                     <input type="submit"
-                        value="Sign in"
-                        className='btn btn-dark' />
+                        value={loading ? "Signing in..." : "Sign in"}
+                        className='btn btn-dark'
+                        disabled={loading} />
                     <br /> <br />
                     <div className='switch'>
                         Don't have an account? <Link to={'/signup'}>Sign up</Link>
