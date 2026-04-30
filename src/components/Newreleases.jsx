@@ -5,7 +5,7 @@ import '../css/Getproducts.css'
 import Loader from './Loader';
 import Footer from './Footer'
 import { FiBook, FiSearch, FiDownload } from 'react-icons/fi';
-import Section from './Section';
+
 
 const BASE_URL = "https://jeankariuki.alwaysdata.net";
 
@@ -103,18 +103,6 @@ const Newreleases = () => {
         }
     };
 
-    const handleSearch = (value) => {
-        setSearch(value);
-        if (value.length > 0) {
-            const filtered = products.filter(product =>
-                product.product_name.toLowerCase().includes(value.toLowerCase())
-            );
-            setFilteredProducts(filtered);
-        } else {
-            setFilteredProducts(products);
-        }
-    };
-
     return (
         <div>
             <div className="search-wrapper">
@@ -180,7 +168,6 @@ const Newreleases = () => {
                 <center>{loading && <Loader />}</center>
                 <h4 className="text-danger text-center">{error}</h4>
 
-                <Section />
 
                 {filteredProducts.length > 0 ? (
                     filteredProducts.map((product) => {

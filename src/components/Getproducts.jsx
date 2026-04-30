@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom';
 import '../css/Getproducts.css'
 import Loader from './Loader';
@@ -9,67 +9,60 @@ import banner1 from '../banners/thestrikerbanner.png'
 import banner2 from '../banners/harrypotterbanner.png'
 import banner3 from '../banners/kingofgluttonybanner.png'
 import Footer from './Footer'
-import { FiBook, FiSearch } from 'react-icons/fi';
+import { FiBook, FiSearch, FiShoppingCart, FiDownload } from 'react-icons/fi';
+
+const BASE_URL   = "https://jeankariuki.alwaysdata.net";
+const IMG_URL    = `${BASE_URL}/static/images/`;
 
 const Getproducts = () => {
 
-    // Initialize hooks to help you manage the state of your application
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-
-    // search bar
-    const [search, setSearch] = useState("");
+    const [products,         setProducts]         = useState([]);
+    const [loading,          setLoading]          = useState(false);
+    const [error,            setError]            = useState("");
+    const [search,           setSearch]           = useState("");
     const [filteredProducts, setFilteredProducts] = useState([]);
+    const [downloadsLeft,    setDownloadsLeft]    = useState(null); // null = not yet fetched
+    const [downloadingId,    setDownloadingId]    = useState(null); // id of book being downloaded
+    const [downloadError,    setDownloadError]    = useState("");
 
-    // Declare the navigate hook
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
-    // below we specify the image base url
-    const img_url = "https://jeankariuki.alwaysdata.net/static/images/"
-
-    // Create a function to help you fetch the products of your API
-    const fetchProducts = async () => {
+    // ── Fetch all products ──────────────────────────────────────────────────
+    const fetchProducts = useCallback(async () => {
         try {
-            // Update the loading hook
-            setLoading(true)
-
-
-
-            // interact with your endpoint for fetching the products
-            const response = await axios.get('https://jeankariuki.alwaysdata.net/api/get_product_details')
-
-            // update the products hook with the response given by the API
+            setLoading(true);
+            const response = await axios.get(`${BASE_URL}/api/get_product_details`);
             setProducts(response.data);
             setFilteredProducts(response.data);
-
-            // set the loading hook back to default
-            setLoading(false)
+        } catch {
+            setError("Could not load books. Please try again later.");
+        } finally {
+            setLoading(false);
         }
+    }, []);
 
-        // If there is an error
-        catch (error) {
-            // set loading hook back to default
-            setLoading(false)
-
-
-            // update the error hook with a message
-            setError("Something went wrong")
+    // ── Fetch daily download quota left for this visitor ───────────────────
+    const fetchDownloadsLeft = useCallback(async () => {
+        try {
+            const res = await axios.get(`${BASE_URL}/api/download_remaining`);
+            setDownloadsLeft(res.data.remaining);
+        } catch {
+            setDownloadsLeft(5); // default gracefully
         }
-    }
+    }, []);
 
-    // we shall use the useEffect hook that automatically re-render new features in case of any changes
     useEffect(() => {
-        fetchProducts()
-    }, [])
+        fetchProducts();
+        fetchDownloadsLeft();
+    }, [fetchProducts, fetchDownloadsLeft]);
 
-    // console.log("The products fetched are:", products)
+    // ── Search ──────────────────────────────────────────────────────────────
     const handleSearch = (value) => {
         setSearch(value);
-
         if (value.length > 0) {
-            const filtered = products.filter(product =>
-                product.product_name.toLowerCase().includes(value.toLowerCase())
+            const filtered = products.filter(p =>
+                p.product_name.toLowerCase().includes(value.toLowerCase()) ||
+                (p.genre && p.genre.toLowerCase().includes(value.toLowerCase()))
             );
             setFilteredProducts(filtered);
         } else {
@@ -77,68 +70,184 @@ const Getproducts = () => {
         }
     };
 
+    // ── Download a free e-book PDF ──────────────────────────────────────────
+    const handleDownload = async (product) => {
+        if (downloadsLeft !== null && downloadsLeft <= 0) {
+            setDownloadError("You've reached your 5 free downloads for today. Come back tomorrow!");
+            setTimeout(() => setDownloadError(""), 5000);
+            return;
+        }
+
+        setDownloadingId(product.product_id);
+        setDownloadError("");
+
+        try {
+            // Stream the file through the rate-limited backend endpoint
+            const response = await axios.get(
+                `${BASE_URL}/api/download_pdf/${product.product_pdf}`,
+                { responseType: "blob" }
+            );
+
+            // Trigger browser download
+            const url      = window.URL.createObjectURL(new Blob([response.data]));
+            const link     = document.createElement("a");
+            link.href      = url;
+            link.setAttribute("download", product.product_pdf);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+
+            // Refresh quota counter
+            setDownloadsLeft(prev => Math.max(0, (prev ?? 5) - 1));
+        } catch (err) {
+            if (err.response?.status === 429) {
+                setDownloadError("Daily download limit reached (5/day). Come back tomorrow!");
+            } else {
+                setDownloadError("Download failed. Please try again.");
+            }
+            setTimeout(() => setDownloadError(""), 5000);
+        } finally {
+            setDownloadingId(null);
+        }
+    };
+
+    // ── Split into available / new releases ────────────────────────────────
+    const thirtyDaysAgo  = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const availableBooks = filteredProducts.filter(p => p.product_category !== "new_release");
+    const newReleases    = filteredProducts.filter(p =>
+        p.product_category === "new_release" &&
+        new Date(p.created_at) > thirtyDaysAgo
+    );
+
+    // ── Reusable book card ─────────────────────────────────────────────────
+    const BookCard = ({ product }) => {
+        const isEbook          = Boolean(product.product_pdf);
+        const isThisDownloading = downloadingId === product.product_id;
+        const outOfDownloads   = downloadsLeft !== null && downloadsLeft <= 0;
+
+        return (
+            <div className="col-md-3 justify-content-center mb-3">
+                <div className="card shadow green">
+                    <img
+                        src={IMG_URL + product.product_photo}
+                        alt={product.product_name}
+                        className='product-img mt-3'
+                    />
+
+                    <div className="card-body green">
+                        <h5 className="text-light bg-dark">
+                            {product.product_name.slice(0, 23)}{product.product_name.length > 23 ? "…" : ""}
+                        </h5>
+
+                        {/* Genre badge (NEW) */}
+                        {product.genre && (
+                            <span className="genre-badge">{product.genre}</span>
+                        )}
+
+                        <p className="text-light mt-1">
+                            {product.product_description.slice(0, 90)}
+                            {product.product_description.length > 90 ? "…" : ""}
+                        </p>
+
+                        {/* Price only shown for physical copies */}
+                        {!isEbook && (
+                            <h4 className="text-dark bg-light"> Kes.{product.product_cost} </h4>
+                        )}
+
+                        <div className="d-flex gap-2 justify-content-center flex-wrap mt-2">
+
+                            {/* ── Physical copy: purchase button ── */}
+                            {!isEbook && (
+                                <button
+                                    className="btn btn-outline-light btn-sm d-flex align-items-center gap-1"
+                                    onClick={() => navigate("/makepayment", { state: { product } })}
+                                >
+                                    <FiShoppingCart size={14} /> Buy Physical Copy
+                                </button>
+                            )}
+
+                            {/* ── E-book: free download button with quota ── */}
+                            {isEbook && (
+                                <button
+                                    className={`btn btn-sm d-flex align-items-center gap-1 ${
+                                        outOfDownloads
+                                            ? "btn-secondary"
+                                            : "btn-success"
+                                    }`}
+                                    onClick={() => handleDownload(product)}
+                                    disabled={isThisDownloading || outOfDownloads}
+                                    title={outOfDownloads ? "Daily limit reached" : "Free e-book download"}
+                                >
+                                    <FiDownload size={14} />
+                                    {isThisDownloading
+                                        ? "Downloading…"
+                                        : outOfDownloads
+                                            ? "Limit reached"
+                                            : "Free PDF"}
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    // ── Render ──────────────────────────────────────────────────────────────
     return (
         <div>
-
-
-            <Carousel className="mb-4"
+            {/* Banner carousel */}
+            <Carousel
+                className="mb-4"
                 prevIcon={<span className="p-3 bg-dark rounded-circle carousel-control-prev-icon" aria-hidden="true" />}
                 nextIcon={<span className="p-3 bg-dark rounded-circle carousel-control-next-icon" aria-hidden="true" />}
                 variant='dark'
             >
                 <Carousel.Item>
-                    <img
-                        className="d-block w-100"
-                        src={banner1}
-                        alt="First slide"
-                        style={{ height: "500px", objectFit: "cover" }}
-                    />
-                    <Carousel.Caption className='text-dark'>
-                    </Carousel.Caption>
+                    <img className="d-block w-100" src={banner1} alt="First slide"  style={{ height: "500px", objectFit: "cover" }} />
+                    <Carousel.Caption className='text-dark'></Carousel.Caption>
                 </Carousel.Item>
-
                 <Carousel.Item>
-                    <img
-                        className="d-block w-100"
-                        src={banner2}
-                        alt="Second slide"
-                        style={{ height: "500px", objectFit: "cover" }}
-                    />
-                    <Carousel.Caption className='text-dark'>
-                    </Carousel.Caption>
+                    <img className="d-block w-100" src={banner2} alt="Second slide" style={{ height: "500px", objectFit: "cover" }} />
+                    <Carousel.Caption className='text-dark'></Carousel.Caption>
                 </Carousel.Item>
-
                 <Carousel.Item>
-                    <img
-                        className="d-block w-100"
-                        src={banner3}
-                        alt="Third slide"
-                        style={{ height: "500px", objectFit: "cover" }}
-                    />
-                    <Carousel.Caption className='text-dark'>
-                    </Carousel.Caption>
+                    <img className="d-block w-100" src={banner3} alt="Third slide"  style={{ height: "500px", objectFit: "cover" }} />
+                    <Carousel.Caption className='text-dark'></Carousel.Caption>
                 </Carousel.Item>
             </Carousel>
 
+            {/* Daily download quota banner */}
+            {downloadsLeft !== null && (
+                <div className={`download-quota-bar ${downloadsLeft === 0 ? "quota-empty" : ""}`}>
+                    {downloadsLeft > 0
+                        ? `📥 Free e-book downloads remaining today: ${downloadsLeft} / 5`
+                        : `🚫 Daily download limit reached. Resets at midnight.`
+                    }
+                </div>
+            )}
+
+            {/* Download error */}
+            {downloadError && (
+                <div className="alert alert-danger text-center mx-4 mt-2">{downloadError}</div>
+            )}
+
+            {/* Search */}
             <div className="search-wrapper">
                 <div className="search-box">
-                    <FiSearch className='search-icon'/>
-
+                    <FiSearch className='search-icon' />
                     <input
                         type="text"
-                        placeholder="Search books..."
+                        placeholder="Search by title or genre…"
                         value={search}
                         onChange={(e) => handleSearch(e.target.value)}
                         className="search-input"
                     />
-
                     <button className="search-btn">Search</button>
                     <button
                         className="clear-btn"
-                        onClick={() => {
-                            setSearch("");
-                            setFilteredProducts(products);
-                        }}
+                        onClick={() => { setSearch(""); setFilteredProducts(products); }}
                     >
                         Clear
                     </button>
@@ -154,6 +263,7 @@ const Getproducts = () => {
                                     onClick={() => setSearch(product.product_name)}
                                 >
                                     <FiBook className='book-icon' /> {product.product_name}
+                                    {product.genre && <span className="search-genre"> — {product.genre}</span>}
                                 </li>
                             ))
                         ) : (
@@ -163,47 +273,39 @@ const Getproducts = () => {
                 )}
             </div>
 
-            <div className='row all'>
+            <center>{loading && <Loader />}</center>
+            <h4 className="text-danger text-center">{error}</h4>
 
-
-                <h1 className="text-light bg-success">Available Books</h1>
-
-                <center> {loading && <Loader />}</center>
-                <h4 className="text-danger">{error}</h4>
-
-                {/* map the products fetched from the API to the user interface */}
-
-                {filteredProducts.map((product) => (
-                    <div className="col-md-3 justify-content-center mb-3">
-
-
-
-                        <div className="card shadow green">
-                            <img
-                                src={img_url + product.product_photo}
-                                alt="product name"
-                                className='product-img mt-3' />
-
-                            <div className="card-body green">
-                                <h5 className="text-light bg-dark"> {product.product_name.slice(0, 23)}... </h5>
-
-                                <p className="text-light"> {product.product_description.slice(0, 90)}... </p>
-
-                                <h4 className="text-dark bg-light"> Kes.{product.product_cost} </h4>
-
-                                <button className="btn btn-outline-light" onClick={() => navigate("/makepayment", { state: { product } })}>Purchase now</button>
-                            </div>
-                        </div>
+            {/* New releases section */}
+            {newReleases.length > 0 && (
+                <div className='row all'>
+                    <div className="section-header new-release-header">
+                        <span className="section-badge">🆕 NEW</span>
+                        <h1>New Releases</h1>
                     </div>
-                ))
-                }
+                    {newReleases.map((product) => (
+                        <BookCard key={product.product_id} product={product} />
+                    ))}
+                </div>
+            )}
 
-            </div >
+            {/* Available books section */}
+            <div className='row all'>
+                <div className="section-header available-header">
+                    <h1>📖 Available Books</h1>
+                </div>
+                {availableBooks.length > 0 ? (
+                    availableBooks.map((product) => (
+                        <BookCard key={product.product_id} product={product} />
+                    ))
+                ) : (
+                    !loading && <p className="text-light text-center w-100">No books available yet.</p>
+                )}
+            </div>
 
             <Footer />
-
         </div>
-    )
-}
+    );
+};
 
-export default Getproducts
+export default Getproducts;

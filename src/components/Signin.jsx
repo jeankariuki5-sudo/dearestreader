@@ -5,7 +5,7 @@ import '../css/Signin.css'
 import Loader from './Loader';
 
 
-const Signin = () => {
+const Signin = ({ setUser }) => {
 
     // Define the two hooks for capturing/storing the users input
     const [email, setEmail] = useState("");
@@ -44,6 +44,7 @@ const Signin = () => {
             // Check whether the user exists as part of your response from the API
             if (response.data.user) {
                 localStorage.setItem("user", JSON.stringify(response.data.user));
+                setUser(response.data.user); // ← updates the navbar instantly
                 // Store JWT token for protected API calls
                 if (response.data.token) {
                     localStorage.setItem("token", response.data.token);
