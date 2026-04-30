@@ -24,7 +24,7 @@ const Aboutus = () => {
 
                         <p>There is a specific kind of magic that happens when you open a book. It's the quiet click of the world fading away and the sudden, vivid rush of stepping into someone else's skin, someone else's era, or someone else's heart.When we built this corner of the internet, we didn't want to create just another "book site." We wanted to build a sanctuary for the curious.In a world that moves too fast and speaks too loudly, we believe in the power of the written word to slow things down. You are not just a "user" visiting a URL; you are a fellow reader. Whether you are here seeking an escape, a hard-to-find truth or simply your next favorite story, you are the heartbeat of this library.Every recommendation we make and every shelf we curate is a conversation started with you in mind. Thank you for letting us be a part of your reading journey.</p>
 
-                        <p><i>With literary love,</i></p>
+                        <p><i>With literary love...,</i></p>
 
                         <h5>The Dearest Reader Team.</h5>
 
