@@ -12,7 +12,7 @@ const Footer = () => {
                         <h3 className="footer-logo">Dearest Reader</h3>
                         <p>Your go-to place for amazing books and great reads.</p>
                         <h6>Contact us:</h6>
-                        <b>Phone: <i>+25410535253</i> </b> <br />
+                        <b>Phone: <i>+254710535253</i> </b> <br />
                         <b>Email: <i>dearestreader@gmail.com</i> </b>
                     </div>
 
