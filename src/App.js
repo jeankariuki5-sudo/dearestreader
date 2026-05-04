@@ -18,6 +18,7 @@ import Cart from './components/Cart';
 import { CartProvider, useCart } from './context/CartContext';
 import { ADMIN_EMAILS } from './config';
 import { FiShoppingCart } from 'react-icons/fi';
+import BookDownload from './components/BookDownload';
 
 
 // Inner component so useCart() can access CartProvider
@@ -126,6 +127,7 @@ function AppContent() {
         <Route path='/aboutus' element={<Aboutus />} />
         <Route path='/writetous' element={<CorrespondenceDesk />} />
         <Route path='/newreleases' element={<Newreleases />} />
+        <Route path="/bookdownload" element={<BookDownload />} />
         <Route path='*' element={<NotFound />} />
       </Routes>
     </div>

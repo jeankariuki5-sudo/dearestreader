@@ -27,9 +27,6 @@ const Getproducts = () => {
     const [error,            setError]            = useState("");
     const [search,           setSearch]           = useState("");
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const [downloadsLeft,    setDownloadsLeft]    = useState(null);
-    const [downloadingId,    setDownloadingId]    = useState(null);
-    const [downloadError,    setDownloadError]    = useState("");
     const [addedIds,         setAddedIds]         = useState({});
 
     const navigate = useNavigate();
@@ -48,19 +45,9 @@ const Getproducts = () => {
         }
     }, []);
 
-    const fetchDownloadsLeft = useCallback(async () => {
-        try {
-            const res = await axios.get(`${BASE_URL}/api/download_remaining`);
-            setDownloadsLeft(res.data.remaining);
-        } catch {
-            setDownloadsLeft(5);
-        }
-    }, []);
-
     useEffect(() => {
         fetchProducts();
-        fetchDownloadsLeft();
-    }, [fetchProducts, fetchDownloadsLeft]);
+    }, [fetchProducts]);
 
     const handleSearch = (value) => {
         setSearch(value);
@@ -93,40 +80,6 @@ const Getproducts = () => {
         navigate('/makepayment', { state: { product } });
     };
 
-    const handleDownload = async (product) => {
-        if (downloadsLeft !== null && downloadsLeft <= 0) {
-            setDownloadError("You've reached your 5 free downloads for today. Come back tomorrow!");
-            setTimeout(() => setDownloadError(""), 5000);
-            return;
-        }
-        setDownloadingId(product.product_id);
-        setDownloadError("");
-        try {
-            const response = await axios.get(
-                `${BASE_URL}/api/download_pdf/${product.product_pdf}`,
-                { responseType: "blob" }
-            );
-            const url  = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href  = url;
-            link.setAttribute("download", product.product_pdf);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
-            setDownloadsLeft(prev => Math.max(0, (prev ?? 5) - 1));
-        } catch (err) {
-            if (err.response?.status === 429) {
-                setDownloadError("Daily download limit reached (5/day). Come back tomorrow!");
-            } else {
-                setDownloadError("Download failed. Please try again.");
-            }
-            setTimeout(() => setDownloadError(""), 5000);
-        } finally {
-            setDownloadingId(null);
-        }
-    };
-
     const thirtyDaysAgo  = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const availableBooks = filteredProducts.filter(p => p.product_category !== "new_release");
     const newReleases    = filteredProducts.filter(p =>
@@ -135,10 +88,9 @@ const Getproducts = () => {
     );
 
     const BookCard = ({ product }) => {
-        const isEbook           = Boolean(product.product_pdf);
-        const isThisDownloading = downloadingId === product.product_id;
-        const outOfDownloads    = downloadsLeft !== null && downloadsLeft <= 0;
-        const justAdded         = addedIds[product.product_id];
+        const isEbook   = Boolean(product.product_pdf);
+        const outOfDownloads = false; // quota is checked on BookDownload page
+        const justAdded = addedIds[product.product_id];
         const inCart            = cartItems.some(i => i.product_id === product.product_id);
 
         return (
@@ -163,51 +115,59 @@ const Getproducts = () => {
                             {product.product_description.length > 90 ? "…" : ""}
                         </p>
 
-                        {!isEbook && (
-                            <h4 className="text-dark bg-light">Kes.{product.product_cost}</h4>
-                        )}
+                        <h4 className="card-price">
+                            {isEbook ? <span className="price-free">Free E-Book</span> : `Kes. ${product.product_cost}`}
+                        </h4>
 
-                        <div className="d-flex gap-2 justify-content-center flex-wrap mt-2">
+                                        <div className="card-actions">
 
-                            {!isEbook && (
-                                <>
-                                    {/* Add to Cart — no login required */}
-                                    <button
-                                        className={`btn btn-sm d-flex align-items-center gap-1 ${
-                                            justAdded ? "btn-success" : "btn-outline-success"
-                                        }`}
-                                        onClick={() => handleAddToCart(product)}
-                                        title={inCart ? "Already in cart — adds another" : "Add to cart"}
-                                    >
-                                        {justAdded
-                                            ? <><FiCheck size={14} /> Added!</>
-                                            : <><FiShoppingCart size={14} /> {inCart ? "Add again" : "Add to Cart"}</>
-                                        }
-                                    </button>
+                            {/* Add to Cart — always visible */}
+                            <button
+                                className={`action-btn cart-btn ${justAdded ? "cart-btn--added" : ""}`}
+                                onClick={() => handleAddToCart(product)}
+                                title={inCart ? "Already in cart — adds another" : "Add to cart"}
+                            >
+                                {justAdded
+                                    ? <><FiCheck size={13} /><span>Added!</span></>
+                                    : <><FiShoppingCart size={13} /><span>{inCart ? "Add Again" : "Add to Cart"}</span></>
+                                }
+                            </button>
 
-                                    {/* Buy Now — login required */}
-                                    <button
-                                        className="btn btn-outline-light btn-sm d-flex align-items-center gap-1"
-                                        onClick={() => handleBuyNow(product)}
-                                    >
-                                        Buy Now
-                                    </button>
-                                </>
-                            )}
+                            {/* Purchase Physical Book — always visible */}
+                            <button
+                                className="action-btn buy-btn"
+                                onClick={() => handleBuyNow(product)}
+                                title="Purchase physical book"
+                            >
+                                <FiBook size={13} /><span>Buy Physical</span>
+                            </button>
 
-                            {isEbook && (
-                                <button
-                                    className={`btn btn-sm d-flex align-items-center gap-1 ${
-                                        outOfDownloads ? "btn-secondary" : "btn-success"
-                                    }`}
-                                    onClick={() => handleDownload(product)}
-                                    disabled={isThisDownloading || outOfDownloads}
-                                    title={outOfDownloads ? "Daily limit reached" : "Free e-book download"}
-                                >
-                                    <FiDownload size={14} />
-                                    {isThisDownloading ? "Downloading…" : outOfDownloads ? "Limit reached" : "Free PDF"}
-                                </button>
-                            )}
+                            {/* Download Free PDF — navigates to BookDownload page */}
+                            <button
+                                className={`action-btn download-btn ${!isEbook ? "download-btn--unavailable" : outOfDownloads ? "download-btn--limit" : ""}`}
+                                onClick={() => {
+                                    if (!isEbook || outOfDownloads) return;
+                                    navigate('/bookdownload', { state: { product } });
+                                }}
+                                disabled={!isEbook || outOfDownloads}
+                                title={
+                                    !isEbook
+                                        ? "No PDF available for this book"
+                                        : outOfDownloads
+                                        ? "Daily limit reached"
+                                        : "View & download free e-book"
+                                }
+                            >
+                                <FiDownload size={13} />
+                                <span>
+                                    {!isEbook
+                                        ? "No PDF"
+                                        : outOfDownloads
+                                        ? "Limit Reached"
+                                        : "Free PDF"}
+                                </span>
+                            </button>
+
                         </div>
                     </div>
                 </div>
@@ -236,19 +196,6 @@ const Getproducts = () => {
                     <Carousel.Caption className='text-dark'></Carousel.Caption>
                 </Carousel.Item>
             </Carousel>
-
-            {downloadsLeft !== null && (
-                <div className={`download-quota-bar ${downloadsLeft === 0 ? "quota-empty" : ""}`}>
-                    {downloadsLeft > 0
-                        ? `📥 Free e-book downloads remaining today: ${downloadsLeft} / 5`
-                        : `🚫 Daily download limit reached. Resets at midnight.`
-                    }
-                </div>
-            )}
-
-            {downloadError && (
-                <div className="alert alert-danger text-center mx-4 mt-2">{downloadError}</div>
-            )}
 
             <div className="search-wrapper">
                 <div className="search-box">
