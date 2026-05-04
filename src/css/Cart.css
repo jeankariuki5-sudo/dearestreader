@@ -1,0 +1,371 @@
+/* ── Cart Page ───────────────────────────────────────────────────── */
+.cart-empty-wrapper {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-empty-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  color: #ccc;
+}
+
+.cart-empty-icon {
+  color: #28a745;
+  margin-bottom: 20px;
+  opacity: 0.6;
+}
+
+.cart-empty-box h2 {
+  color: #fff;
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.cart-empty-box p {
+  color: #aaa;
+  margin-bottom: 16px;
+}
+
+/* ── Cart Page Layout ────────────────────────────────────────────── */
+.cart-page {
+  background: #1a1a1a;
+  min-height: 100vh;
+}
+
+.cart-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+/* ── Header ──────────────────────────────────────────────────────── */
+.cart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cart-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.cart-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid #444;
+  color: #bbb;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cart-back-btn:hover {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.cart-clear-btn {
+  background: none;
+  border: 1px solid #c0392b;
+  color: #e74c3c;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cart-clear-btn:hover {
+  background: #c0392b;
+  color: #fff;
+}
+
+/* ── Layout: items + summary ─────────────────────────────────────── */
+.cart-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .cart-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Cart Items ───────────────────────────────────────────────────── */
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cart-item {
+  display: flex;
+  gap: 16px;
+  background: #242424;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 16px;
+  transition: border-color 0.2s;
+}
+
+.cart-item:hover {
+  border-color: #28a745;
+}
+
+.cart-item-img {
+  width: 90px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.cart-item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cart-item-name {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.cart-item-genre {
+  display: inline-block;
+  background: #28a74522;
+  border: 1px solid #28a74555;
+  color: #28a745;
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+  width: fit-content;
+}
+
+.cart-item-desc {
+  color: #999;
+  font-size: 0.82rem;
+  flex: 1;
+  margin-bottom: 12px;
+}
+
+.cart-item-bottom {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cart-item-price {
+  color: #28a745;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* ── Qty Controls ─────────────────────────────────────────────────── */
+.qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.qty-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+}
+
+.qty-btn:hover {
+  background: #28a745;
+  color: #fff;
+}
+
+.qty-value {
+  color: #fff;
+  font-weight: 600;
+  min-width: 28px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.cart-remove-btn {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.cart-remove-btn:hover {
+  background: #c0392b22;
+}
+
+/* ── Order Summary ────────────────────────────────────────────────── */
+.cart-summary {
+  background: #242424;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 24px;
+  position: sticky;
+  top: 20px;
+}
+
+.summary-title {
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.summary-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.summary-book-name {
+  flex: 1;
+  margin-right: 8px;
+}
+
+.summary-divider {
+  height: 1px;
+  background: #333;
+  margin: 16px 0;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.summary-total-amount {
+  color: #28a745;
+  font-size: 1.1rem;
+}
+
+.checkout-btn {
+  width: 100%;
+  background: #28a745;
+  border: none;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.checkout-btn:hover {
+  background: #218838;
+  transform: translateY(-1px);
+}
+
+.checkout-btn:active {
+  transform: translateY(0);
+}
+
+.summary-note {
+  text-align: center;
+  color: #777;
+  font-size: 0.78rem;
+  margin-top: 12px;
+  margin-bottom: 0;
+}
+
+/* ── Cart badge in navbar ─────────────────────────────────────────── */
+.cart-nav-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.7);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.cart-nav-btn:hover {
+  border-color: #28a745;
+  color: #28a745;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #28a745;
+  color: #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pop 0.2s ease;
+}
+
+@keyframes pop {
+  0%   { transform: scale(0.5); }
+  70%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}

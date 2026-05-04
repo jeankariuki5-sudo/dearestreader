@@ -150,18 +150,20 @@ const Newreleases = () => {
                 <div className="alert alert-danger text-center mx-4 mt-2">{downloadError}</div>
             )}
 
-            {downloadsLeft !== null && (
+           <div className='text-light'>
+             {downloadsLeft !== null && (
                 <div className={`download-quota-bar ${downloadsLeft === 0 ? "quota-empty" : ""}`}>
                     {downloadsLeft > 0
-                        ? `📥 Free e-book downloads remaining today: ${downloadsLeft} / 5`
-                        : `🚫 Daily download limit reached. Resets at midnight.`
+                        ? ` Free e-book downloads remaining today: ${downloadsLeft} / 5`
+                        : ` Daily download limit reached. Resets at midnight.`
                     }
                 </div>
             )}
+           </div>
 
             <div className='row all'>
                 <div className="section-header new-release-header">
-                    <span className="section-badge">🆕 NEW</span>
+                    <span className="section-badge"></span>
                     <h1>New Releases</h1>
                 </div>
 

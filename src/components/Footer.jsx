@@ -21,7 +21,6 @@ const Footer = () => {
                         <h3>Quick Links</h3>
                         <ul>
                             <li><a href="/">Available Books</a></li>
-                            <li><a href="/addbook">Add Book</a></li>
                             <li><a href="/signin">Sign In</a></li>
                             <li><a href="/signup">Sign Up</a></li>
                             <li><a href="/aboutus">About Us</a></li>

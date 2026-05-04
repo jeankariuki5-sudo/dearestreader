@@ -31,23 +31,19 @@ const Addproducts = () => {
     // Admin-only guard
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
-        if (!storedUser) {
-            navigate("/signin");
-            return;
-        }
+        if (!storedUser) { navigate("/signin"); return; }
         const currentUserEmail = JSON.parse(storedUser).email;
-        if (!ADMIN_EMAILS.includes(currentUserEmail)) {
-            navigate("/");
-        }
+        if (!ADMIN_EMAILS.includes(currentUserEmail)) navigate("/");
     }, [navigate]);
 
-    const [productName, setProductName]   = useState("");
-    const [description, setDescription]   = useState("");
-    const [cost, setCost]                 = useState("");
-    const [photo, setPhoto]               = useState(null);
-    const [pdf, setPdf]                   = useState(null);
-    const [category, setCategory]         = useState("available");
-    const [genre, setGenre]               = useState("General"); // NEW
+    const [productName, setProductName] = useState("");
+    const [description, setDescription] = useState("");
+    const [cost, setCost]               = useState("");
+    const [photo, setPhoto]             = useState(null);
+    const [pdf, setPdf]                 = useState(null);
+    const [category, setCategory]       = useState("available");
+    const [genre, setGenre]             = useState("General");
+    const [author, setAuthor]           = useState(null);
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState("");
@@ -66,11 +62,9 @@ const Addproducts = () => {
             formdata.append("product_cost",        cost);
             formdata.append("product_photo",       photo);
             formdata.append("product_category",    category);
-            formdata.append("genre",               genre); // NEW
-            formdata.append("author",              ""); // required by backend INSERT
-            if (pdf) {
-                formdata.append("product_pdf", pdf);
-            }
+            formdata.append("genre",               genre);
+            formdata.append("author",              "");
+            if (pdf) formdata.append("product_pdf", pdf);
 
             const response = await axios.post(
                 'https://jeankariuki.alwaysdata.net/api/add_product',
@@ -80,7 +74,6 @@ const Addproducts = () => {
 
             setLoading(false);
             setSuccess(response.data.message);
-
             setProductName("");
             setDescription("");
             setCost("");
@@ -88,8 +81,8 @@ const Addproducts = () => {
             setPdf(null);
             setCategory("available");
             setGenre("General");
+            setAuthor("")
             e.target.reset();
-
             setTimeout(() => setSuccess(""), 5000);
         } catch (err) {
             setLoading(false);
@@ -100,40 +93,61 @@ const Addproducts = () => {
     };
 
     return (
-        <div className='row justify-content-center mt-4 all'>
-            <div className='card col-md-6 shadow p-4 wrapper'>
-                <h1 className='text-light'>Add a Book</h1>
+        <div className='all'>
+            <div className='wrapper'>
+                <h1>Add a Book</h1>
 
                 <center>{loading && <Loader />}</center>
-                <h5 className="text-success">{success}</h5>
-                <h5 className="text-danger">{error}</h5>
+                {success && <div className="feedback-success">{success}</div>}
+                {error   && <div className="feedback-error">{error}</div>}
 
                 <form onSubmit={handleSubmit}>
 
-                    <div className="input-box">
+                    {/* Book Name */}
+                    <div className="field-group">
+                        <label className="field-label">Book Title</label>
                         <input
+                            className="field-input"
                             type="text"
-                            placeholder='Enter the book name'
+                            placeholder="e.g. The Great Gatsby"
                             value={productName}
                             onChange={(e) => setProductName(e.target.value)}
                             required
                         />
                     </div>
 
-                    <div className="input-box">
+                     {/* Author */}
+                    <div className="field-group">
+                        <label className="field-label">Author</label>
                         <input
+                            className="field-input"
                             type="text"
-                            placeholder='Enter the book description'
+                            placeholder="e.g. Shakespear"
+                            value={author}
+                            onChange={(e) => setAuthor(e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    {/* Description */}
+                    <div className="field-group">
+                        <label className="field-label">Description</label>
+                        <textarea
+                            className="field-input"
+                            placeholder="A short summary of the book…"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             required
                         />
                     </div>
 
-                    <div className="input-box">
+                    {/* Cost */}
+                    <div className="field-group">
+                        <label className="field-label">Price (KES)</label>
                         <input
+                            className="field-input"
                             type="number"
-                            placeholder='Enter the book cost (KES)'
+                            placeholder="e.g. 850"
                             value={cost}
                             onChange={(e) => setCost(e.target.value)}
                             min="0"
@@ -141,11 +155,11 @@ const Addproducts = () => {
                         />
                     </div>
 
-                    {/* ── Genre selector (NEW) ─────────────────────────── */}
-                    <div className="input-box">
-                        <label className="file-label">🏷️ Genre</label>
+                    {/* Genre */}
+                    <div className="field-group">
+                        <label className="field-label">Genre</label>
                         <select
-                            className="genre-select"
+                            className="field-select"
                             value={genre}
                             onChange={(e) => setGenre(e.target.value)}
                             required
@@ -156,73 +170,73 @@ const Addproducts = () => {
                         </select>
                     </div>
 
-                    {/* ── Category (physical / new release) ───────────── */}
-                    <div className="category-box">
-                        <label className="file-label">📚 Add book to:</label>
-                        <div className="category-options">
-                            <label
-                                className={`category-pill ${category === "available" ? "active" : ""}`}
-                                onClick={() => setCategory("available")}
-                            >
-                                <input
-                                    type="radio"
-                                    name="category"
-                                    value="available"
-                                    checked={category === "available"}
-                                    onChange={() => setCategory("available")}
-                                />
+                    {/* Category — radio toggle buttons */}
+                    <div className="field-group">
+                        <label className="field-label">Add book to</label>
+                        <div className="radio-group">
+                            <input
+                                type="radio"
+                                id="cat-available"
+                                name="category"
+                                value="available"
+                                checked={category === "available"}
+                                onChange={() => setCategory("available")}
+                            />
+                            <label className="radio-pill" htmlFor="cat-available">
                                 📖 Available Books
                             </label>
 
-                            <label
-                                className={`category-pill ${category === "new_release" ? "active" : ""}`}
-                                onClick={() => setCategory("new_release")}
-                            >
-                                <input
-                                    type="radio"
-                                    name="category"
-                                    value="new_release"
-                                    checked={category === "new_release"}
-                                    onChange={() => setCategory("new_release")}
-                                />
+                            <input
+                                type="radio"
+                                id="cat-new"
+                                name="category"
+                                value="new_release"
+                                checked={category === "new_release"}
+                                onChange={() => setCategory("new_release")}
+                            />
+                            <label className="radio-pill" htmlFor="cat-new">
                                 🆕 New Releases
                             </label>
                         </div>
                     </div>
 
-                    {/* ── Cover image ───────────────────────────────────── */}
-                    <div className="input-box file-box">
-                        <label className="file-label">📷 Cover Image</label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => setPhoto(e.target.files[0])}
-                            required
-                        />
+                    {/* Cover image */}
+                    <div className="field-group">
+                        <label className="field-label">Cover Image</label>
+                        <div className="file-upload-box">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => setPhoto(e.target.files[0])}
+                                required
+                            />
+                            {photo && <p className="file-chosen">✅ {photo.name}</p>}
+                        </div>
                     </div>
 
-                    {/* ── PDF — if uploaded this becomes a free e-book ─── */}
-                    <div className="input-box file-box">
-                        <label className="file-label">
-                            📄 Book PDF{" "}
-                            <span className="optional-tag">
-                                (upload to offer as a free e-book · 5 downloads/day limit)
-                            </span>
-                        </label>
-                        <input
-                            type="file"
-                            accept="application/pdf"
-                            onChange={(e) => setPdf(e.target.files[0])}
-                        />
-                        {pdf && <p className="file-name">✅ {pdf.name}</p>}
+                    {/* PDF (optional) */}
+                    <div className="field-group">
+                        <label className="field-label">Book PDF <span style={{ textTransform: 'none', fontWeight: 400, color: 'rgba(255,255,255,0.35)', fontSize: '0.75rem' }}> — optional, makes it a free e-book</span></label>
+                        <div className="file-upload-box">
+                            <input
+                                type="file"
+                                accept="application/pdf"
+                                onChange={(e) => setPdf(e.target.files[0])}
+                            />
+                            {pdf
+                                ? <p className="file-chosen">✅ {pdf.name}</p>
+                                : <p className="file-hint">5 free downloads/day limit will apply</p>
+                            }
+                        </div>
                     </div>
 
-                    <input
+                    <button
                         type="submit"
-                        value={loading ? "Adding..." : "Add Book"}
-                        className='btn'
+                        className="submit-btn"
                         disabled={loading}
-                    />
+                    >
+                        {loading ? "Adding…" : "Add Book"}
+                    </button>
 
                 </form>
             </div>
