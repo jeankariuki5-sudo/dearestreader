@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../css/BookDownload.css';
 import Loader from './Loader';
@@ -9,17 +9,41 @@ import { FiDownload, FiArrowLeft, FiBook, FiUser, FiTag, FiFileText } from 'reac
 const BASE_URL = "https://jeankariuki.alwaysdata.net";
 const IMG_URL  = `${BASE_URL}/static/images/`;
 
+// Read the stored auth token from localStorage
+const getAuthHeader = () => {
+    const token = localStorage.getItem("token");
+    return token ? { "Authorization": `Bearer ${token}` } : {};
+};
+
 const BookDownload = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const { product, downloadsLeft: initialDownloadsLeft } = location.state || {};
+    const { product } = location.state || {};
 
     const [downloading,   setDownloading]   = useState(false);
     const [downloaded,    setDownloaded]    = useState(false);
-    const [downloadsLeft, setDownloadsLeft] = useState(initialDownloadsLeft ?? 5);
+    const [downloadsLeft, setDownloadsLeft] = useState(null);   // null = loading
+    const [isAdmin,       setIsAdmin]       = useState(false);
     const [error,         setError]         = useState("");
     const [success,       setSuccess]       = useState("");
+
+    // Fetch the real per-user quota from the server whenever this page loads.
+    // The Authorization header lets Flask decode the token and identify the user.
+    useEffect(() => {
+        const fetchQuota = async () => {
+            try {
+                const res = await axios.get(`${BASE_URL}/api/download_remaining`, {
+                    headers: getAuthHeader()
+                });
+                setDownloadsLeft(res.data.remaining);
+                setIsAdmin(res.data.is_admin ?? false);
+            } catch {
+                setDownloadsLeft(5);
+            }
+        };
+        fetchQuota();
+    }, []);
 
     // Guard — no product passed
     if (!product) {
@@ -33,7 +57,7 @@ const BookDownload = () => {
         );
     }
 
-    const outOfDownloads = downloadsLeft !== null && downloadsLeft <= 0;
+    const outOfDownloads = !isAdmin && downloadsLeft !== null && downloadsLeft <= 0;
 
     const handleDownload = async () => {
         if (outOfDownloads) return;
@@ -45,7 +69,7 @@ const BookDownload = () => {
         try {
             const response = await axios.get(
                 `${BASE_URL}/api/download_pdf/${product.product_pdf}`,
-                { responseType: "blob" }
+                { responseType: "blob", headers: getAuthHeader() }
             );
 
             const url  = window.URL.createObjectURL(new Blob([response.data]));
@@ -57,7 +81,10 @@ const BookDownload = () => {
             link.remove();
             window.URL.revokeObjectURL(url);
 
-            setDownloadsLeft(prev => Math.max(0, (prev ?? 5) - 1));
+            // Only decrement the visible counter for non-admins
+            if (!isAdmin) {
+                setDownloadsLeft(prev => Math.max(0, (prev ?? 5) - 1));
+            }
             setDownloaded(true);
             setSuccess("Download started! Enjoy your book 📖");
             setTimeout(() => setSuccess(""), 6000);
@@ -65,6 +92,7 @@ const BookDownload = () => {
         } catch (err) {
             if (err.response?.status === 429) {
                 setError("Daily download limit reached (5/day). Come back tomorrow!");
+                setDownloadsLeft(0);
             } else {
                 setError("Download failed. Please try again.");
             }
@@ -134,8 +162,12 @@ const BookDownload = () => {
                             </div>
 
                             {/* Download quota */}
-                            <div className={`bd-quota ${downloadsLeft === 0 ? "bd-quota--empty" : ""}`}>
-                                {downloadsLeft > 0
+                            <div className={`bd-quota ${downloadsLeft === 0 && !isAdmin ? "bd-quota--empty" : ""}`}>
+                                {isAdmin
+                                    ? `Admin — unlimited downloads`
+                                    : downloadsLeft === null
+                                    ? `Checking your download quota…`
+                                    : downloadsLeft > 0
                                     ? `You have ${downloadsLeft} of 5 free downloads remaining today`
                                     : `Daily limit reached — resets at midnight`
                                 }

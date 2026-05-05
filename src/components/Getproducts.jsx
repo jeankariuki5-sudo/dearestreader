@@ -242,8 +242,8 @@ const Getproducts = () => {
             {newReleases.length > 0 && (
                 <div className='row all'>
                     <div className="section-header new-release-header">
-                        <span className="section-badge">🆕 NEW</span>
-                        <h1>New Releases</h1>
+                        <span className="section-badge"></span>
+                        <h1 id="newreleases">New Releases</h1>
                     </div>
                     {newReleases.map((product) => (
                         <BookCard key={product.product_id} product={product} />

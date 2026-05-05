@@ -43,7 +43,7 @@ const Addproducts = () => {
     const [pdf, setPdf]                 = useState(null);
     const [category, setCategory]       = useState("available");
     const [genre, setGenre]             = useState("General");
-    const [author, setAuthor]           = useState(null);
+    const [author, setAuthor]           = useState("");
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState("");
@@ -63,7 +63,7 @@ const Addproducts = () => {
             formdata.append("product_photo",       photo);
             formdata.append("product_category",    category);
             formdata.append("genre",               genre);
-            formdata.append("author",              "");
+            formdata.append("author",              author);
             if (pdf) formdata.append("product_pdf", pdf);
 
             const response = await axios.post(

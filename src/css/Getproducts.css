@@ -160,7 +160,14 @@ input::placeholder {
 
 .all h1 {
     font-family: 'Playfair Display', serif;
-    color: #8fbf9f;
+    color: #cfe2d6;
+    background: radial-gradient(#3f8a63, transparent);
+}
+
+#newreleases {
+    font-family: 'Playfair Display', serif;
+    color: #cfe2d6;
+    background: radial-gradient(rgb(180, 158, 32), transparent);
 }
 
 .card-body h5 {

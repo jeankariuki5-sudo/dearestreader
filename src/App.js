@@ -32,11 +32,12 @@ function AppContent() {
     }
   });
 
-  const { cartCount } = useCart();
+  const { cartCount, clearCart } = useCart();
 
   const handleSignOut = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    clearCart();   // ← wipe the cart so it doesn't bleed into the next user's session
     setUser(null);
   };
 

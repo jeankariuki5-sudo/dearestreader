@@ -4,4 +4,4 @@ export const ADMIN_EMAILS = [
 ];
 
 // Must match ADMIN_TOKEN in app.py exactly
-export const ADMIN_TOKEN = "your-admin-token-here";
+export const ADMIN_TOKEN = "jeankariuki5";

@@ -9,6 +9,12 @@ import { FiBook, FiSearch, FiDownload } from 'react-icons/fi';
 
 const BASE_URL = "https://jeankariuki.alwaysdata.net";
 
+// Read the stored auth token from localStorage
+const getAuthHeader = () => {
+    const token = localStorage.getItem("token");
+    return token ? { "Authorization": `Bearer ${token}` } : {};
+};
+
 const Newreleases = () => {
 
     const [products, setProducts] = useState([]);
@@ -17,6 +23,7 @@ const Newreleases = () => {
     const [search, setSearch] = useState("");
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [downloadsLeft, setDownloadsLeft] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(false);
     const [downloadingId, setDownloadingId] = useState(null);
     const [downloadError, setDownloadError] = useState("");
 
@@ -45,8 +52,11 @@ const Newreleases = () => {
 
     const fetchDownloadsLeft = async () => {
         try {
-            const res = await axios.get(`${BASE_URL}/api/download_remaining`);
+            const res = await axios.get(`${BASE_URL}/api/download_remaining`, {
+                headers: getAuthHeader()
+            });
             setDownloadsLeft(res.data.remaining);
+            setIsAdmin(res.data.is_admin ?? false);
         } catch {
             setDownloadsLeft(5);
         }
@@ -70,17 +80,18 @@ const Newreleases = () => {
     };
 
     const handleDownload = async (product) => {
-        if (downloadsLeft !== null && downloadsLeft <= 0) {
+        if (!isAdmin && downloadsLeft !== null && downloadsLeft <= 0) {
             setDownloadError("You've reached your 5 free downloads for today. Come back tomorrow!");
             setTimeout(() => setDownloadError(""), 5000);
             return;
         }
         setDownloadingId(product.product_id);
         setDownloadError("");
+
         try {
             const response = await axios.get(
                 `${BASE_URL}/api/download_pdf/${product.product_pdf}`,
-                { responseType: "blob" }
+                { responseType: "blob", headers: getAuthHeader() }
             );
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement("a");
@@ -90,10 +101,14 @@ const Newreleases = () => {
             link.click();
             link.remove();
             window.URL.revokeObjectURL(url);
-            setDownloadsLeft(prev => Math.max(0, (prev ?? 5) - 1));
+            // Only decrement counter for non-admins
+            if (!isAdmin) {
+                setDownloadsLeft(prev => Math.max(0, (prev ?? 5) - 1));
+            }
         } catch (err) {
             if (err.response?.status === 429) {
                 setDownloadError("Daily download limit reached (5/day). Come back tomorrow!");
+                setDownloadsLeft(0);
             } else {
                 setDownloadError("Download failed. Please try again.");
             }
@@ -152,8 +167,10 @@ const Newreleases = () => {
 
            <div className='text-light'>
              {downloadsLeft !== null && (
-                <div className={`download-quota-bar ${downloadsLeft === 0 ? "quota-empty" : ""}`}>
-                    {downloadsLeft > 0
+                <div className={`download-quota-bar ${downloadsLeft === 0 && !isAdmin ? "quota-empty" : ""}`}>
+                    {isAdmin
+                        ? ` Admin — unlimited downloads`
+                        : downloadsLeft > 0
                         ? ` Free e-book downloads remaining today: ${downloadsLeft} / 5`
                         : ` Daily download limit reached. Resets at midnight.`
                     }
@@ -164,7 +181,7 @@ const Newreleases = () => {
             <div className='row all'>
                 <div className="section-header new-release-header">
                     <span className="section-badge"></span>
-                    <h1>New Releases</h1>
+                    <h1 id='newreleases'>New Releases</h1>
                 </div>
 
                 <center>{loading && <Loader />}</center>
@@ -175,7 +192,7 @@ const Newreleases = () => {
                     filteredProducts.map((product) => {
                         const isEbook = Boolean(product.product_pdf);
                         const isThisDownloading = downloadingId === product.product_id;
-                        const outOfDownloads = downloadsLeft !== null && downloadsLeft <= 0;
+                        const outOfDownloads = !isAdmin && downloadsLeft !== null && downloadsLeft <= 0;
 
                         return (
                             <div key={product.product_id} className="col-md-3 justify-content-center mb-3">

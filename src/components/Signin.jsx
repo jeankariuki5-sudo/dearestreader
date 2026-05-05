@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import '../css/Signin.css'
 import Loader from './Loader';
+import { useCart } from '../context/CartContext';
 
 const Signin = ({ setUser }) => {
     const [email,    setEmail]    = useState("");
@@ -14,6 +15,7 @@ const Signin = ({ setUser }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from || "/";
+    const { clearCart } = useCart();  // ← clear previous user's cart on new login
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,6 +31,7 @@ const Signin = ({ setUser }) => {
             setLoading(false);
 
             if (response.data.user) {
+                clearCart();  // ← wipe any cart left behind by a previous user
                 localStorage.setItem("user", JSON.stringify(response.data.user));
                 setUser(response.data.user);
                 if (response.data.token) {
