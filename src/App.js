@@ -8,7 +8,7 @@ import Signin from './components/Signin';
 import Addproducts from './components/Addproducts';
 import Getproducts from './components/Getproducts';
 import Makepayment from './components/Makepayment';
-import NotFound from './components/Notfound'
+import NotFound from './components/NotFound'
 import weblogo from './weblogo.png'
 import Aboutus from './components/Aboutus';
 import BookHeader from './components/BookHeader';
