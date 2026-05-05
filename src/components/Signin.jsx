@@ -20,6 +20,7 @@ const Signin = ({ setUser }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setSuccess("")
         setError("");
 
         try {
