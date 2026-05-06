@@ -19,6 +19,7 @@ import { CartProvider, useCart } from './context/CartContext';
 import { ADMIN_EMAILS } from './config';
 import { FiShoppingCart } from 'react-icons/fi';
 import BookDownload from './components/BookDownload';
+import ScrollToTop from './components/ScrollToTop';
 
 
 // Inner component so useCart() can access CartProvider
@@ -141,6 +142,7 @@ function App() {
       <CartProvider>
         <AppContent />
       </CartProvider>
+       <ScrollToTop threshold={300} label="Top" />
     </Router>
   );
 }

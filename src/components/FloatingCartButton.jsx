@@ -15,10 +15,10 @@ const FloatingCartButton = () => {
       aria-label={`View cart, ${cartCount} item${cartCount !== 1 ? 's' : ''}`}
       style={{
         position: 'fixed',
-        bottom: '130px',
-        right: '28px',
-        width: '50px',
-        height: '50px',
+        bottom: '200px',
+        right: '27px',
+        width: '55px',
+        height: '55px',
         borderRadius: '50%',
         background: '#000',
         border: 'none',
