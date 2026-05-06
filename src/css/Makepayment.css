@@ -1,43 +1,431 @@
-.green {
-    background-color: rgba(27, 42, 34, 0.85);
-}
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap');
 
-.all {
+/* ── Page shell ─────────────────────────────────────────── */
+.mp-all {
     font-family: 'Montserrat', sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     min-height: 100vh;
-    background: url('background2.png') no-repeat;
-    background-attachment: fixed;
+    padding: 40px 16px 60px;
+    background: url('background2.png') no-repeat center center fixed;
     background-size: cover;
-    background-position: center;
 }
 
-.card {
-    border-radius: 10px;
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+/* ── Centred column ─────────────────────────────────────── */
+.mp-wrapper {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* ── Back button ────────────────────────────────────────── */
+.mp-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(27, 42, 34, 0.85);
+    border: 1.5px solid #2e4438;
+    color: #8fbf9f;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
     cursor: pointer;
-    border: 1px solid #edf9eb;
-    
+    align-self: flex-start;
+    transition: background 0.2s, color 0.2s;
+    letter-spacing: 0.03em;
 }
 
-.card:hover {
-    
-    transform: translateY(-5px);
-    box-shadow: 100px 100px 2000px #edf9eb,
-        100px 100px 4000px #edf9eb;
+.mp-back-btn:hover {
+    background: #2f6f4f;
+    color: #ecfdf5;
 }
 
-.card-body h2 {
+/* ── Main card ──────────────────────────────────────────── */
+.mp-card {
+    display: flex;
+    gap: 36px;
+    background: rgba(27, 42, 34, 0.88);
+    backdrop-filter: blur(10px);
+    border: 1px solid #2e4438;
+    border-radius: 14px;
+    padding: 36px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Left — cover column ────────────────────────────────── */
+.mp-cover-col {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mp-cover-frame {
+    position: relative;
+}
+
+.mp-cover-img {
+    width: 190px;
+    height: 270px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.6),
+        0 0 0 3px rgba(143, 191, 159, 0.12);
+    display: block;
+}
+
+.mp-price-tag {
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2f6f4f;
+    color: #ecfdf5;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 4px 14px;
+    border-radius: 20px;
+    white-space: nowrap;
+    box-shadow: 0 2px 10px rgba(47, 111, 79, 0.5);
+}
+
+/* Cart icon placeholder (cart checkout mode) */
+.mp-cart-icon-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 190px;
+    height: 270px;
+    border: 2px dashed #2e4438;
+    border-radius: 12px;
+    background: rgba(15, 25, 20, 0.4);
+}
+
+.mp-cart-icon {
+    color: #8fbf9f;
+    opacity: 0.7;
+}
+
+.mp-cart-count {
+    color: #8fbf9f;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* ── Right — info column ────────────────────────────────── */
+.mp-info-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+}
+
+.mp-title {
     font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    color: #1a1a1a;
+    font-size: 1.9rem;
+    color: #ecfdf5;
+    line-height: 1.25;
+    margin: 0;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500&family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
+/* ── Meta chips ─────────────────────────────────────────── */
+.mp-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
 
-.all h1 {
+.mp-meta-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(47, 111, 79, 0.2);
+    border: 1px solid #2e4438;
+    color: #8fbf9f;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.03em;
+}
+
+/* ── Description block ──────────────────────────────────── */
+.mp-description-block {
+    background: rgba(15, 25, 20, 0.5);
+    border: 1px solid #2e4438;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+.mp-desc-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #6b8f7a;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.mp-description {
+    color: #cfe7d9;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    margin: 0;
+}
+
+/* ── Cart item list ─────────────────────────────────────── */
+.mp-cart-list {
+    background: rgba(15, 25, 20, 0.5);
+    border: 1px solid #2e4438;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.mp-cart-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #1e3328;
+}
+
+.mp-cart-thumb {
+    width: 52px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 5px;
+    flex-shrink: 0;
+}
+
+.mp-cart-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.mp-cart-item-name {
+    color: #ecfdf5;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mp-cart-item-qty {
+    color: #6b8f7a;
+    font-size: 0.75rem;
+}
+
+.mp-cart-item-price {
+    color: #5dd99a;
+    font-weight: 700;
+    font-size: 0.88rem;
+    white-space: nowrap;
+}
+
+.mp-cart-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: rgba(47, 111, 79, 0.15);
+    color: #ecfdf5;
+    font-weight: 700;
+    font-size: 1rem;
     font-family: 'Playfair Display', serif;
+}
+
+/* ── M-Pesa strip ───────────────────────────────────────── */
+.mp-mpesa-strip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(15, 25, 20, 0.5);
+    border: 1px solid #2e4438;
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: #8fbf9f;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.mp-mpesa-logo {
+    height: 26px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: brightness(1.1);
+}
+
+/* ── Feedback messages ──────────────────────────────────── */
+.mp-feedback {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.mp-feedback--success {
+    background: rgba(47, 111, 79, 0.25);
+    border: 1px solid #2f6f4f;
+    color: #5dd99a;
+}
+
+.mp-feedback--error {
+    background: rgba(120, 40, 40, 0.25);
+    border: 1px solid #7a3030;
+    color: #f08080;
+}
+
+/* ── Loader ─────────────────────────────────────────────── */
+.mp-loader-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 6px 0;
+}
+
+/* ── Phone input field ──────────────────────────────────── */
+.mp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mp-phone-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(15, 25, 20, 0.7);
+    border: 1.5px solid #2e4438;
+    border-radius: 10px;
+    padding: 10px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.mp-phone-field:focus-within {
+    border-color: #8fbf9f;
+    box-shadow: 0 0 0 3px rgba(143, 191, 159, 0.15);
+}
+
+.mp-phone-icon {
+    color: #6b8f7a;
+    flex-shrink: 0;
+    transition: color 0.2s;
+}
+
+.mp-phone-field:focus-within .mp-phone-icon {
+    color: #8fbf9f;
+}
+
+.mp-phone-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #ecfdf5;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+}
+
+.mp-phone-input::placeholder {
+    color: #4a6657;
+}
+
+/* Hide number spinners */
+.mp-phone-input::-webkit-outer-spin-button,
+.mp-phone-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+/* ── Pay button ─────────────────────────────────────────── */
+.mp-pay-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    border: none;
+    background: linear-gradient(135deg, #2f6f4f 0%, #3f8a63 100%);
+    color: #ecfdf5;
+    box-shadow: 0 4px 20px rgba(47, 111, 79, 0.45);
+    transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.mp-pay-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(47, 111, 79, 0.55);
+    background: linear-gradient(135deg, #3f8a63 0%, #4fa070 100%);
+}
+
+.mp-pay-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.mp-pay-btn:disabled {
+    background: rgba(40, 55, 47, 0.6);
+    color: #4a6657;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* ── Disclaimer ─────────────────────────────────────────── */
+.mp-disclaimer {
+    font-size: 0.72rem;
+    color: #4a6657;
+    text-align: center;
+    margin: 0;
+    font-style: italic;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .mp-card {
+        flex-direction: column;
+        align-items: center;
+        padding: 24px 18px;
+        gap: 24px;
+    }
+
+    .mp-cover-img {
+        width: 150px;
+        height: 210px;
+    }
+
+    .mp-cart-icon-wrap {
+        width: 150px;
+        height: 180px;
+    }
+
+    .mp-title {
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    .mp-meta {
+        justify-content: center;
+    }
 }

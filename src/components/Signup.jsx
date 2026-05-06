@@ -5,21 +5,26 @@ import Loader from './Loader';
 import '../css/Signup.css'
 
 const Signup = () => {
-    const [username,        setUsername]        = useState("");
-    const [email,           setEmail]           = useState("");
-    const [password,        setPassword]        = useState("");
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [phone,           setPhone]           = useState("");
+    const [phone, setPhone] = useState("");
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState("");
-    const [error,   setError]   = useState("");
+    const [error, setError] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (password !== confirmPassword) {
             setError("Passwords do not match. Please try again.");
+            return;
+        }
+
+        if (password.length < 8) {
+            setError("Password must be at least 8 characters long.");
             return;
         }
 
@@ -34,25 +39,29 @@ const Signup = () => {
         try {
             const formdata = new FormData();
             formdata.append("username", username);
-            formdata.append("email",    email);
+            formdata.append("email", email);
             formdata.append("password", password);
-            formdata.append("phone",    phone);
+            formdata.append("phone", phone);
 
             const response = await axios.post('https://jeankariuki.alwaysdata.net/api/signup', formdata);
             setLoading(false);
-            setSuccess(response.data.message);
 
-            setUsername("");
-            setEmail("");
-            setPassword("");
-            setConfirmPassword("");
-            setPhone("");
+            if (!response.data.success) {
+                // Backend returned an error (e.g. duplicate email)
+                setError(response.data.error);
+            } else {
+                setSuccess(response.data.message);
+                setUsername("");
+                setEmail("");
+                setPassword("");
+                setConfirmPassword("");
+                setPhone("");
+            }
         } catch {
             setLoading(false);
-            setError("Registration failed. Please check your details and try again.");
+            setError("Registration failed. Please check your connection and try again.");
         }
     };
-
     return (
         <div className='all'>
             <div className="wrapper">
@@ -60,7 +69,7 @@ const Signup = () => {
 
                 <center>{loading && <Loader />}</center>
                 {success && <div className="feedback-success">{success}</div>}
-                {error   && <div className="feedback-error">{error}</div>}
+                {error && <div className="feedback-error">{error}</div>}
 
                 <form onSubmit={handleSubmit}>
 

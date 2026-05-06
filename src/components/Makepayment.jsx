@@ -1,39 +1,41 @@
 import axios from 'axios';
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import '../css/Makepayment.css'
+import '../css/Makepayment.css';
 import Loader from './Loader';
 import Footer from './Footer';
 import { useCart } from '../context/CartContext';
+import {
+    FiArrowLeft, FiBook, FiTag, FiShoppingCart,
+    FiCreditCard, FiPhone, FiFileText, FiUser
+} from 'react-icons/fi';
+
+const IMG_URL = "https://jeankariuki.alwaysdata.net/static/images/";
 
 const Makepayment = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { clearCart } = useCart();
 
-    // Supports two modes:
-    //  1. Single product:  navigate('/makepayment', { state: { product } })
-    //  2. Cart checkout:   navigate('/makepayment', { state: { cartItems, total } })
     const { product, cartItems, total } = location.state || {};
-
-    const isCart = Boolean(cartItems && cartItems.length > 0);
+    const isCart        = Boolean(cartItems && cartItems.length > 0);
     const paymentAmount = isCart ? total : product?.product_cost;
 
-    const img_url = "https://jeankariuki.alwaysdata.net/static/images/";
-
-    const [number, setNumber] = useState("");
+    const [number,  setNumber]  = useState("");
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState("");
-    const [error, setError] = useState("");
+    const [error,   setError]   = useState("");
 
-    // If state is missing entirely, bounce back
+    // Guard — no state passed
     if (!product && !isCart) {
         return (
-            <div className="all text-center py-5">
-                <h4 className="text-light">No order details found.</h4>
-                <button className="btn btn-success mt-3" onClick={() => navigate('/')}>
-                    ← Browse Books
-                </button>
+            <div className="mp-all">
+                <div className="mp-wrapper">
+                    <p className="mp-description" style={{ textAlign: 'center' }}>No order details found.</p>
+                    <button className="mp-back-btn" onClick={() => navigate('/')}>
+                        <FiArrowLeft size={15} /> Browse Books
+                    </button>
+                </div>
             </div>
         );
     }
@@ -43,23 +45,18 @@ const Makepayment = () => {
         setLoading(true);
         setSuccess("");
         setError("");
-
         try {
             const formdata = new FormData();
-            formdata.append("phone", number);
+            formdata.append("phone",  number);
             formdata.append("amount", paymentAmount);
 
             const response = await axios.post(
                 "https://jeankariuki.alwaysdata.net/api/mpesa_payment",
                 formdata
             );
-
             setLoading(false);
             setSuccess(response.data.message);
-
-            // Clear cart after successful payment initiation
             if (isCart) clearCart();
-
         } catch (err) {
             setLoading(false);
             setError(err.message);
@@ -68,102 +65,148 @@ const Makepayment = () => {
 
     return (
         <div>
-            <div className="all">
-                <div className='row justify-content-center'>
-                    <h1 className="text-light bg-success">Make Payment – Lipa na M-Pesa</h1>
+            <div className="mp-all">
+                <div className="mp-wrapper">
 
-                    <div className="col-md-1">
-                        <input
-                            type="button"
-                            className="btn btn-dark"
-                            value="← Back"
-                            onClick={() => navigate(isCart ? '/cart' : '/')}
-                        />
-                    </div>
+                    {/* Back button */}
+                    <button
+                        className="mp-back-btn"
+                        onClick={() => navigate(isCart ? '/cart' : '/')}
+                    >
+                        <FiArrowLeft size={15} /> {isCart ? 'Back to Cart' : 'Back to Books'}
+                    </button>
 
-                    <div className="col-md-6 card shadow p-4 green">
+                    <div className="mp-card">
 
-                        {/* ── Single product view ── */}
-                        {!isCart && product && (
-                            <>
-                                <img
-                                    src={img_url + product.product_photo}
-                                    alt={product.product_name}
-                                    className='product-img'
-                                />
-                                <div className="card-body">
-                                    <h2 className="text-light bg-dark">{product.product_name}</h2>
-                                    <p className="text-light">{product.product_description}</p>
-                                    <h3 className="text-dark bg-light">Kes {product.product_cost}</h3>
+                        {/* LEFT COLUMN */}
+                        <div className="mp-cover-col">
+                            {!isCart && product && (
+                                <div className="mp-cover-frame">
+                                    <img
+                                        src={IMG_URL + product.product_photo}
+                                        alt={product.product_name}
+                                        className="mp-cover-img"
+                                    />
+                                    <div className="mp-price-tag">
+                                        Kes {Number(product.product_cost).toLocaleString()}
+                                    </div>
                                 </div>
-                            </>
-                        )}
+                            )}
 
-                        {/* ── Cart summary view ── */}
-                        {isCart && (
-                            <div className="card-body">
-                                <h2 className="text-light bg-dark mb-3">Order Summary</h2>
+                            {isCart && (
+                                <div className="mp-cart-icon-wrap">
+                                    <FiShoppingCart size={56} className="mp-cart-icon" />
+                                    <p className="mp-cart-count">
+                                        {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
 
-                                {/* Mini cart item list */}
-                                <div className="mb-3">
+                        {/* RIGHT COLUMN */}
+                        <div className="mp-info-col">
+
+                            <h1 className="mp-title">
+                                {isCart ? 'Order Summary' : product.product_name}
+                            </h1>
+
+                            {/* Meta chips — single product */}
+                            {!isCart && product && (
+                                <div className="mp-meta">
+                                    {product.author && (
+                                        <span className="mp-meta-chip">
+                                            <FiUser size={12} /> {product.author}
+                                        </span>
+                                    )}
+                                    {product.genre && (
+                                        <span className="mp-meta-chip">
+                                            <FiTag size={12} /> {product.genre}
+                                        </span>
+                                    )}
+                                    <span className="mp-meta-chip">
+                                        <FiBook size={12} /> Physical Book
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Description — single product */}
+                            {!isCart && product && (
+                                <div className="mp-description-block">
+                                    <div className="mp-desc-label">
+                                        <FiFileText size={13} /> About this book
+                                    </div>
+                                    <p className="mp-description">{product.product_description}</p>
+                                </div>
+                            )}
+
+                            {/* Cart item list */}
+                            {isCart && (
+                                <div className="mp-cart-list">
                                     {cartItems.map(item => (
-                                        <div
-                                            key={item.product_id}
-                                            className="d-flex align-items-center gap-3 mb-3 pb-3"
-                                            style={{ borderBottom: '1px solid #444' }}
-                                        >
+                                        <div key={item.product_id} className="mp-cart-item">
                                             <img
-                                                src={img_url + item.product_photo}
+                                                src={IMG_URL + item.product_photo}
                                                 alt={item.product_name}
-                                                style={{
-                                                    width: 60, height: 80,
-                                                    objectFit: 'cover', borderRadius: 6,
-                                                    flexShrink: 0
-                                                }}
+                                                className="mp-cart-thumb"
                                             />
-                                            <div className="flex-grow-1">
-                                                <div className="text-light fw-semibold" style={{ fontSize: '0.9rem' }}>
-                                                    {item.product_name}
-                                                </div>
-                                                <div className="text-secondary" style={{ fontSize: '0.8rem' }}>
-                                                    Qty: {item.quantity}
-                                                </div>
+                                            <div className="mp-cart-item-info">
+                                                <span className="mp-cart-item-name">{item.product_name}</span>
+                                                <span className="mp-cart-item-qty">Qty: {item.quantity}</span>
                                             </div>
-                                            <div className="text-success fw-bold">
+                                            <span className="mp-cart-item-price">
                                                 Kes {(Number(item.product_cost) * item.quantity).toLocaleString()}
-                                            </div>
+                                            </span>
                                         </div>
                                     ))}
+                                    <div className="mp-cart-total">
+                                        <span>Total</span>
+                                        <span>Kes {Number(total).toLocaleString()}</span>
+                                    </div>
                                 </div>
+                            )}
 
-                                <h3 className="text-dark bg-light">
-                                    Total: Kes {Number(total).toLocaleString()}
-                                </h3>
+                            {/* M-Pesa strip */}
+                            <div className="mp-mpesa-strip">
+                                {/* <img
+                                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/320px-M-PESA_LOGO-01.svg.png"
+                                    alt="M-Pesa"
+                                    className="mp-mpesa-logo"
+                                /> */}
+                                <span>Lipa na M-Pesa — STK push will be sent to your phone</span>
                             </div>
-                        )}
 
-                        {/* ── Payment form (shared) ── */}
-                        <div className="card-body">
-                            <form onSubmit={handlesubmit}>
-                                <center>{loading && <Loader />}</center>
-                                {success && <h3 className="text-success">{success}</h3>}
-                                {error   && <h4 className="text-danger">{error}</h4>}
+                            {/* Feedback */}
+                            {success && <div className="mp-feedback mp-feedback--success">{success}</div>}
+                            {error   && <div className="mp-feedback mp-feedback--error">{error}</div>}
+                            {loading && <div className="mp-loader-wrap"><Loader /></div>}
 
-                                <input
-                                    type="number"
-                                    className='form-control'
-                                    placeholder='Enter phone number 254XXXXXXX'
-                                    required
-                                    value={number}
-                                    onChange={(e) => setNumber(e.target.value)}
-                                />
-                                <br />
-                                <input
+                            {/* Payment form */}
+                            <form onSubmit={handlesubmit} className="mp-form">
+                                <div className="mp-phone-field">
+                                    <FiPhone className="mp-phone-icon" size={16} />
+                                    <input
+                                        type="number"
+                                        className="mp-phone-input"
+                                        placeholder="254XXXXXXXXX"
+                                        required
+                                        value={number}
+                                        onChange={(e) => setNumber(e.target.value)}
+                                    />
+                                </div>
+                                <button
                                     type="submit"
-                                    value={`Pay Kes ${Number(paymentAmount).toLocaleString()} 💳`}
-                                    className='btn btn-success'
-                                />
+                                    className="mp-pay-btn"
+                                    disabled={loading}
+                                >
+                                    <FiCreditCard size={18} />
+                                    {loading ? "Processing…" : `Pay Kes ${Number(paymentAmount).toLocaleString()}`}
+                                </button>
                             </form>
+
+                            <p className="mp-disclaimer">
+                                You will receive an M-Pesa prompt on your phone. Enter your PIN to complete the payment.
+                            </p>
+
                         </div>
                     </div>
                 </div>

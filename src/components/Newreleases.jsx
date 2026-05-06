@@ -1,77 +1,62 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../css/Getproducts.css'
+import '../css/Getproducts.css';
 import Loader from './Loader';
-import Footer from './Footer'
-import { FiBook, FiSearch, FiDownload } from 'react-icons/fi';
-
+import Footer from './Footer';
+import { FiBook, FiSearch, FiShoppingCart, FiDownload, FiCheck } from 'react-icons/fi';
+import { useCart } from '../context/CartContext';
+import FloatingCartButton from './FloatingCartButton'
 
 const BASE_URL = "https://jeankariuki.alwaysdata.net";
+const IMG_URL  = `${BASE_URL}/static/images/`;
 
-// Read the stored auth token from localStorage
-const getAuthHeader = () => {
-    const token = localStorage.getItem("token");
-    return token ? { "Authorization": `Bearer ${token}` } : {};
+const getUser = () => {
+    try { return JSON.parse(localStorage.getItem("user")); }
+    catch { return null; }
 };
 
 const Newreleases = () => {
 
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-    const [search, setSearch] = useState("");
+    const [products,         setProducts]         = useState([]);
+    const [loading,          setLoading]          = useState(false);
+    const [error,            setError]            = useState("");
+    const [search,           setSearch]           = useState("");
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const [downloadsLeft, setDownloadsLeft] = useState(null);
-    const [isAdmin, setIsAdmin] = useState(false);
-    const [downloadingId, setDownloadingId] = useState(null);
-    const [downloadError, setDownloadError] = useState("");
+    const [addedIds,         setAddedIds]         = useState({});
 
-    const navigate = useNavigate()
-
-    const img_url = `${BASE_URL}/static/images/`
+    const navigate = useNavigate();
+    const { addToCart, cartItems } = useCart();
 
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-    const fetchProducts = async () => {
+    const fetchProducts = useCallback(async () => {
         try {
-            setLoading(true)
-            const response = await axios.get(`${BASE_URL}/api/get_product_details`)
-            const newReleaseOnly = response.data.filter(p =>
+            setLoading(true);
+            const response = await axios.get(`${BASE_URL}/api/get_product_details`);
+            const newOnly = response.data.filter(p =>
                 p.product_category === "new_release" &&
                 new Date(p.created_at) > thirtyDaysAgo
             );
-            setProducts(newReleaseOnly);
-            setFilteredProducts(newReleaseOnly);
-            setLoading(false)
-        } catch (error) {
-            setLoading(false)
-            setError("Something went wrong")
-        }
-    }
-
-    const fetchDownloadsLeft = async () => {
-        try {
-            const res = await axios.get(`${BASE_URL}/api/download_remaining`, {
-                headers: getAuthHeader()
-            });
-            setDownloadsLeft(res.data.remaining);
-            setIsAdmin(res.data.is_admin ?? false);
+            setProducts(newOnly);
+            setFilteredProducts(newOnly);
         } catch {
-            setDownloadsLeft(5);
+            setError("Could not load books. Please try again later.");
+        } finally {
+            setLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         fetchProducts();
-        fetchDownloadsLeft();
-    }, [])
+    }, [fetchProducts]);
 
     const handleSearch = (value) => {
         setSearch(value);
         if (value.length > 0) {
-            const filtered = products.filter(product =>
-                product.product_name.toLowerCase().includes(value.toLowerCase())
+            const filtered = products.filter(p =>
+                p.product_name.toLowerCase().includes(value.toLowerCase()) ||
+                (p.genre && p.genre.toLowerCase().includes(value.toLowerCase()))
             );
             setFilteredProducts(filtered);
         } else {
@@ -79,53 +64,109 @@ const Newreleases = () => {
         }
     };
 
-    const handleDownload = async (product) => {
-        if (!isAdmin && downloadsLeft !== null && downloadsLeft <= 0) {
-            setDownloadError("You've reached your 5 free downloads for today. Come back tomorrow!");
-            setTimeout(() => setDownloadError(""), 5000);
+    const handleAddToCart = (product) => {
+        addToCart(product);
+        setAddedIds(prev => ({ ...prev, [product.product_id]: true }));
+        setTimeout(() => {
+            setAddedIds(prev => ({ ...prev, [product.product_id]: false }));
+        }, 1500);
+    };
+
+    const handleBuyNow = (product) => {
+        if (!getUser()) {
+            navigate('/signin', { state: { from: '/newreleases' } });
             return;
         }
-        setDownloadingId(product.product_id);
-        setDownloadError("");
+        navigate('/makepayment', { state: { product } });
+    };
 
-        try {
-            const response = await axios.get(
-                `${BASE_URL}/api/download_pdf/${product.product_pdf}`,
-                { responseType: "blob", headers: getAuthHeader() }
-            );
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", product.product_pdf);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
-            // Only decrement counter for non-admins
-            if (!isAdmin) {
-                setDownloadsLeft(prev => Math.max(0, (prev ?? 5) - 1));
-            }
-        } catch (err) {
-            if (err.response?.status === 429) {
-                setDownloadError("Daily download limit reached (5/day). Come back tomorrow!");
-                setDownloadsLeft(0);
-            } else {
-                setDownloadError("Download failed. Please try again.");
-            }
-            setTimeout(() => setDownloadError(""), 5000);
-        } finally {
-            setDownloadingId(null);
-        }
+    const BookCard = ({ product }) => {
+        const isEbook   = Boolean(product.product_pdf);
+        const justAdded = addedIds[product.product_id];
+        const inCart    = cartItems.some(i => i.product_id === product.product_id);
+
+        return (
+            <div className="col-md-3 justify-content-center mb-3">
+                <div className="card shadow green">
+                    <img
+                        src={IMG_URL + product.product_photo}
+                        alt={product.product_name}
+                        className='product-img mt-3'
+                    />
+                    <div className="card-body green">
+                        <h5 className="text-light bg-dark">
+                            {product.product_name.slice(0, 23)}{product.product_name.length > 23 ? "…" : ""}
+                        </h5>
+
+                        {product.genre && (
+                            <span className="genre-badge">{product.genre}</span>
+                        )}
+
+                        <p className="text-light mt-1">
+                            {product.product_description.slice(0, 90)}
+                            {product.product_description.length > 90 ? "…" : ""}
+                        </p>
+
+                        <h4 className="card-price">
+                            {isEbook
+                                ? <span className="price-free">Free E-Book</span>
+                                : `Kes. ${product.product_cost}`
+                            }
+                        </h4>
+
+                        <div className="card-actions">
+
+                            {/* Add to Cart */}
+                            <button
+                                className={`action-btn cart-btn ${justAdded ? "cart-btn--added" : ""}`}
+                                onClick={() => handleAddToCart(product)}
+                                title={inCart ? "Already in cart — adds another" : "Add to cart"}
+                            >
+                                {justAdded
+                                    ? <><FiCheck size={13} /><span>Added!</span></>
+                                    : <><FiShoppingCart size={13} /><span>{inCart ? "Add Again" : "Add to Cart"}</span></>
+                                }
+                            </button>
+
+                            {/* Buy Physical */}
+                            <button
+                                className="action-btn buy-btn"
+                                onClick={() => handleBuyNow(product)}
+                                title="Purchase physical book"
+                            >
+                                <FiBook size={13} /><span>Buy Physical</span>
+                            </button>
+
+                            {/* Download Free PDF */}
+                            <button
+                                className={`action-btn download-btn ${!isEbook ? "download-btn--unavailable" : ""}`}
+                                onClick={() => {
+                                    if (!isEbook) return;
+                                    navigate('/bookdownload', { state: { product } });
+                                }}
+                                disabled={!isEbook}
+                                title={!isEbook ? "No PDF available for this book" : "View & download free e-book"}
+                            >
+                                <FiDownload size={13} />
+                                <span>{!isEbook ? "No PDF" : "Free PDF"}</span>
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     return (
         <div>
+            {/* Search bar */}
             <div className="search-wrapper">
                 <div className="search-box">
                     <FiSearch className='search-icon' />
                     <input
                         type="text"
-                        placeholder="Search books..."
+                        placeholder="Search by title or genre…"
                         value={search}
                         onChange={(e) => handleSearch(e.target.value)}
                         className="search-input"
@@ -133,10 +174,7 @@ const Newreleases = () => {
                     <button className="search-btn">Search</button>
                     <button
                         className="clear-btn"
-                        onClick={() => {
-                            setSearch("");
-                            setFilteredProducts(products);
-                        }}
+                        onClick={() => { setSearch(""); setFilteredProducts(products); }}
                     >
                         Clear
                     </button>
@@ -152,6 +190,7 @@ const Newreleases = () => {
                                     onClick={() => setSearch(product.product_name)}
                                 >
                                     <FiBook className='book-icon' /> {product.product_name}
+                                    {product.genre && <span className="search-genre"> — {product.genre}</span>}
                                 </li>
                             ))
                         ) : (
@@ -161,90 +200,30 @@ const Newreleases = () => {
                 )}
             </div>
 
-            {downloadError && (
-                <div className="alert alert-danger text-center mx-4 mt-2">{downloadError}</div>
-            )}
-
-           <div className='text-light'>
-             {downloadsLeft !== null && (
-                <div className={`download-quota-bar ${downloadsLeft === 0 && !isAdmin ? "quota-empty" : ""}`}>
-                    {isAdmin
-                        ? ` Admin — unlimited downloads`
-                        : downloadsLeft > 0
-                        ? ` Free e-book downloads remaining today: ${downloadsLeft} / 5`
-                        : ` Daily download limit reached. Resets at midnight.`
-                    }
-                </div>
-            )}
-           </div>
-
             <div className='row all'>
                 <div className="section-header new-release-header">
                     <span className="section-badge"></span>
-                    <h1 id='newreleases'>New Releases</h1>
+                    <h1 id="newreleases">New Releases</h1>
                 </div>
 
                 <center>{loading && <Loader />}</center>
                 <h4 className="text-danger text-center">{error}</h4>
 
-
                 {filteredProducts.length > 0 ? (
-                    filteredProducts.map((product) => {
-                        const isEbook = Boolean(product.product_pdf);
-                        const isThisDownloading = downloadingId === product.product_id;
-                        const outOfDownloads = !isAdmin && downloadsLeft !== null && downloadsLeft <= 0;
-
-                        return (
-                            <div key={product.product_id} className="col-md-3 justify-content-center mb-3">
-                                <div className="card shadow green">
-                                    <img
-                                        src={img_url + product.product_photo}
-                                        alt={product.product_name}
-                                        className='product-img mt-3' />
-
-                                    <div className="card-body green">
-                                        <h5 className="text-light bg-dark"> {product.product_name.slice(0, 23)}... </h5>
-                                        <p className="text-light"> {product.product_description.slice(0, 90)}... </p>
-
-                                        {!isEbook && (
-                                            <h4 className="text-dark bg-light"> Kes.{product.product_cost} </h4>
-                                        )}
-
-                                        <div className="d-flex gap-2 justify-content-center flex-wrap mt-2">
-                                            {!isEbook && (
-                                                <button
-                                                    className="btn btn-outline-light btn-sm"
-                                                    onClick={() => navigate("/makepayment", { state: { product } })}
-                                                >
-                                                    💳 Purchase
-                                                </button>
-                                            )}
-
-                                            {isEbook && (
-                                                <button
-                                                    className={`btn btn-sm d-flex align-items-center gap-1 ${outOfDownloads ? "btn-secondary" : "btn-success"}`}
-                                                    onClick={() => handleDownload(product)}
-                                                    disabled={isThisDownloading || outOfDownloads}
-                                                    title={outOfDownloads ? "Daily limit reached" : "Free e-book download"}
-                                                >
-                                                    <FiDownload size={14} />
-                                                    {isThisDownloading ? "Downloading…" : outOfDownloads ? "Limit reached" : "Free PDF"}
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })
+                    filteredProducts.map((product) => (
+                        <BookCard key={product.product_id} product={product} />
+                    ))
                 ) : (
-                    !loading && <p className="text-light text-center w-100">No new releases at the moment.</p>
+                    !loading && (
+                        <p className="text-light text-center w-100">No new releases at the moment.</p>
+                    )
                 )}
             </div>
 
             <Footer />
+            <FloatingCartButton />
         </div>
-    )
-}
+    );
+};
 
-export default Newreleases
+export default Newreleases;

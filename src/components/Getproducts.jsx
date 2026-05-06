@@ -11,6 +11,7 @@ import banner3 from '../banners/kingofgluttonybanner.png'
 import Footer from './Footer'
 import { FiBook, FiSearch, FiShoppingCart, FiDownload, FiCheck } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
+import FloatingCartButton from './FloatingCartButton';
 
 const BASE_URL = "https://jeankariuki.alwaysdata.net";
 const IMG_URL  = `${BASE_URL}/static/images/`;
@@ -265,6 +266,7 @@ const Getproducts = () => {
             </div>
 
             <Footer />
+            <FloatingCartButton />
         </div>
     );
 };
