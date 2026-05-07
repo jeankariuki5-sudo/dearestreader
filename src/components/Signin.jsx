@@ -14,7 +14,8 @@ const Signin = ({ setUser }) => {
 
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from || "/";
+    const from    = location.state?.from    || "/";
+    const product = location.state?.product || null;   // ← passed by BookDownload
     const { clearCart } = useCart();  // ← clear previous user's cart on new login
 
     const handleSubmit = async (e) => {
@@ -38,7 +39,7 @@ const Signin = ({ setUser }) => {
                 if (response.data.token) {
                     localStorage.setItem("token", response.data.token);
                 }
-                navigate(from);
+                navigate(from, { state: { product }, replace: true });
             } else {
                 setError("Login failed. Please check your credentials and try again.");
             }
@@ -58,7 +59,10 @@ const Signin = ({ setUser }) => {
                 {error   && <div className="feedback-error">{error}</div>}
                 {location.state?.from && (
                     <div className="feedback-warning">
-                        Please sign in to complete your purchase.
+                        {product
+                            ? `Please sign in to download "${product.product_name}".`
+                            : "Please sign in to complete your purchase."
+                        }
                     </div>
                 )}
 

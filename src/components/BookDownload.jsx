@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import '../css/BookDownload.css';
 import Loader from './Loader';
 import Footer from './Footer';
-import { FiDownload, FiArrowLeft, FiBook, FiUser, FiTag, FiFileText } from 'react-icons/fi';
+import { FiDownload, FiArrowLeft, FiBook, FiUser, FiTag, FiFileText, FiLock } from 'react-icons/fi';
 
 const BASE_URL = "https://jeankariuki.alwaysdata.net";
 const IMG_URL  = `${BASE_URL}/static/images/`;
@@ -28,9 +28,14 @@ const BookDownload = () => {
     const [error,         setError]         = useState("");
     const [success,       setSuccess]       = useState("");
 
+    // Derived from localStorage — no token means the user is not logged in.
+    const isLoggedIn = !!localStorage.getItem("token");
+
     // Fetch the real per-user quota from the server whenever this page loads.
-    // The Authorization header lets Flask decode the token and identify the user.
+    // Skip entirely when the user is not logged in — the endpoint requires auth.
     useEffect(() => {
+        if (!isLoggedIn) return;
+
         const fetchQuota = async () => {
             try {
                 const res = await axios.get(`${BASE_URL}/api/download_remaining`, {
@@ -43,7 +48,7 @@ const BookDownload = () => {
             }
         };
         fetchQuota();
-    }, []);
+    }, [isLoggedIn]);
 
     // Guard — no product passed
     if (!product) {
@@ -60,6 +65,10 @@ const BookDownload = () => {
     const outOfDownloads = !isAdmin && downloadsLeft !== null && downloadsLeft <= 0;
 
     const handleDownload = async () => {
+        if (!isLoggedIn) {
+            navigate('/signin', { state: { from: location.pathname, product } });
+            return;
+        }
         if (outOfDownloads) return;
 
         setDownloading(true);
@@ -162,8 +171,10 @@ const BookDownload = () => {
                             </div>
 
                             {/* Download quota */}
-                            <div className={`bd-quota ${downloadsLeft === 0 && !isAdmin ? "bd-quota--empty" : ""}`}>
-                                {isAdmin
+                            <div className={`bd-quota ${!isLoggedIn ? "bd-quota--locked" : downloadsLeft === 0 && !isAdmin ? "bd-quota--empty" : ""}`}>
+                                {!isLoggedIn
+                                    ? `Log in to track your daily download quota`
+                                    : isAdmin
                                     ? `Admin — unlimited downloads`
                                     : downloadsLeft === null
                                     ? `Checking your download quota…`
@@ -182,26 +193,37 @@ const BookDownload = () => {
                                 <div className="bd-loader-wrap"><Loader /></div>
                             )}
 
-                            <button
-                                className={`bd-download-btn ${
-                                    outOfDownloads
-                                        ? "bd-download-btn--disabled"
+                            {!isLoggedIn ? (
+                                /* Unauthenticated — show a login CTA instead */
+                                <button
+                                    className="bd-download-btn bd-download-btn--locked"
+                                    onClick={() => navigate('/signin', { state: { from: location.pathname, product } })}
+                                >
+                                    <FiLock size={18} />
+                                    Log In to Download
+                                </button>
+                            ) : (
+                                <button
+                                    className={`bd-download-btn ${
+                                        outOfDownloads
+                                            ? "bd-download-btn--disabled"
+                                            : downloaded
+                                            ? "bd-download-btn--done"
+                                            : ""
+                                    }`}
+                                    onClick={handleDownload}
+                                    disabled={downloading || outOfDownloads}
+                                >
+                                    <FiDownload size={18} />
+                                    {downloading
+                                        ? "Downloading…"
+                                        : outOfDownloads
+                                        ? "Daily Limit Reached"
                                         : downloaded
-                                        ? "bd-download-btn--done"
-                                        : ""
-                                }`}
-                                onClick={handleDownload}
-                                disabled={downloading || outOfDownloads}
-                            >
-                                <FiDownload size={18} />
-                                {downloading
-                                    ? "Downloading…"
-                                    : outOfDownloads
-                                    ? "Daily Limit Reached"
-                                    : downloaded
-                                    ? "Download Again"
-                                    : "Download Free PDF"}
-                            </button>
+                                        ? "Download Again"
+                                        : "Download Free PDF"}
+                                </button>
+                            )}
 
                             <p className="bd-disclaimer">
                                 This book is offered free of charge. Please respect the author's work.
