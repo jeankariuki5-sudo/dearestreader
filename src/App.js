@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -34,12 +34,14 @@ function AppContent() {
   });
 
   const { cartCount, clearCart } = useCart();
+  const Navigate = useNavigate();
 
   const handleSignOut = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     clearCart();   // ← wipe the cart so it doesn't bleed into the next user's session
     setUser(null);
+    Navigate("/")
   };
 
   const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email);
